@@ -159,6 +159,16 @@ void RPolyline::normalize(double tolerance) {
         }
     }
 
+    // remove duplicate last vertex of closed polyline:
+    if (closed) {
+        if (newVertices.first().equalsFuzzy(newVertices.last(), tolerance)) {
+            newVertices.removeLast();
+            newBulges.removeLast();
+            newStartWidths.removeLast();
+            newEndWidths.removeLast();
+        }
+    }
+
     vertices = newVertices;
     bulges = newBulges;
     startWidths = newStartWidths;
@@ -193,6 +203,25 @@ bool RPolyline::appendShape(const RShape& shape, bool prepend) {
             double seg = RSettings::getDoubleValue("Explode/EllipseSegments", 32);
             RPolyline pl = elp->approximateWithArcs(seg);
             return appendShape(pl, prepend);
+        }
+    }
+
+    // append circle as polyline to empty polyline:
+    else if (shape.getShapeType()==RShape::Circle && isEmpty()) {
+        const RCircle* circle = dynamic_cast<const RCircle*>(&shape);
+        if (circle!=NULL) {
+            appendShape(RArc(circle->getCenter(), circle->getRadius(), 0.0, M_PI, false));
+            appendShape(RArc(circle->getCenter(), circle->getRadius(), M_PI, 2*M_PI, false));
+            return true;
+        }
+    }
+
+    // append full circle arc as circle (two arc segments) to empty polyline:
+    else if (shape.getShapeType()==RShape::Arc) {
+        const RArc* arc = dynamic_cast<const RArc*>(&shape);
+        if (arc!=NULL && arc->isFullCircle()) {
+            appendShape(RCircle(arc->getCenter(), arc->getRadius()));
+            return true;
         }
     }
 
@@ -246,6 +275,7 @@ bool RPolyline::appendShape(const RShape& shape, bool prepend) {
         connectionPoint = shape.getEndPoint();
         nextPoint = shape.getStartPoint();
         if (vertices.size()==0) {
+            // first point:
             appendVertex(connectionPoint);
         }
         gap = vertices.first().getDistanceTo(connectionPoint);
@@ -255,6 +285,7 @@ bool RPolyline::appendShape(const RShape& shape, bool prepend) {
         connectionPoint = shape.getStartPoint();
         nextPoint = shape.getEndPoint();
         if (vertices.size()==0) {
+            // first point:
             appendVertex(connectionPoint);
         }
         gap = vertices.last().getDistanceTo(connectionPoint);
@@ -310,6 +341,10 @@ void RPolyline::appendVertex(const RVector& vertex, double bulge, double w1, dou
     Q_ASSERT(vertices.length()==bulges.length());
     Q_ASSERT(vertices.length()==startWidths.length());
     Q_ASSERT(vertices.length()==endWidths.length());
+}
+
+void RPolyline::appendVertex(double x, double y, double bulge, double w1, double w2) {
+    appendVertex(RVector(x, y), bulge, w1, w2);
 }
 
 void RPolyline::prependVertex(const RVector& vertex, double bulge, double w1, double w2) {
@@ -783,7 +818,7 @@ QList<RVector> RPolyline::getSelfIntersectionPoints() const {
 }
 
 RS::Orientation RPolyline::getOrientation(bool implicitelyClosed) const {
-    if (!implicitelyClosed && !isGeometricallyClosed()) {
+    if (!implicitelyClosed && !isGeometricallyClosed(0.00001)) {
         return RS::Any;
     }
 
@@ -791,18 +826,21 @@ RS::Orientation RPolyline::getOrientation(bool implicitelyClosed) const {
         return RS::Any;
     }
 
-    RPolyline pl = convertArcToLineSegments(16);
+    if (hasArcSegments()) {
+        RPolyline plSegmented = convertArcToLineSegments(16);
+        return plSegmented.getOrientation(implicitelyClosed);
+    }
 
     RVector minV = RVector::invalid;
     QSharedPointer<RShape> shapeBefore;
     QSharedPointer<RShape> shapeAfter;
     QSharedPointer<RShape> shape;
-    QSharedPointer<RShape> previousShape = pl.getSegmentAt(pl.countSegments()-1);
+    QSharedPointer<RShape> previousShape = getSegmentAt(countSegments()-1);
 
     // find minimum vertex (lower left corner):
-    QList<QSharedPointer<RShape> > segments = pl.getExploded();
+    QList<QSharedPointer<RShape> > segments = getExploded();
     for (int i=0; i<segments.length(); i++) {
-        shape = pl.getSegmentAt(i);
+        shape = getSegmentAt(i);
         if (shape.isNull()) {
             continue;
         }
@@ -821,28 +859,29 @@ RS::Orientation RPolyline::getOrientation(bool implicitelyClosed) const {
         previousShape = shape;
     }
 
-    double l;
-    RVector p;
-    QList<RVector> list;
-    QSharedPointer<RArc> arcBefore = shapeBefore.dynamicCast<RArc>();
-    if (!arcBefore.isNull()) {
-        l = arcBefore->getLength();
-        list = arcBefore->getPointsWithDistanceToEnd(l/10, RS::FromStart);
-        if (!list.isEmpty()) {
-            p = list[0];
-            shapeBefore = QSharedPointer<RLine>(new RLine(p, arcBefore->getEndPoint()));
-        }
-    }
+    // TOOD: fails for large arc (>180d) at bottom left corner, creating round bottom left shape:
+//    double l;
+//    RVector p;
+//    QList<RVector> list;
+//    QSharedPointer<RArc> arcBefore = shapeBefore.dynamicCast<RArc>();
+//    if (!arcBefore.isNull()) {
+//        l = arcBefore->getLength();
+//        list = arcBefore->getPointsWithDistanceToEnd(l/10, RS::FromEnd);
+//        if (!list.isEmpty()) {
+//            p = list[0];
+//            shapeBefore = QSharedPointer<RLine>(new RLine(p, arcBefore->getEndPoint()));
+//        }
+//    }
 
-    QSharedPointer<RArc> arcAfter = shapeAfter.dynamicCast<RArc>();
-    if (!arcAfter.isNull()) {
-        l = arcAfter->getLength();
-        list = arcAfter->getPointsWithDistanceToEnd(l/10, RS::FromEnd);
-        if (!list.isEmpty()) {
-            p = list[0];
-            shapeAfter = QSharedPointer<RLine>(new RLine(arcAfter->getStartPoint(), p));
-        }
-    }
+//    QSharedPointer<RArc> arcAfter = shapeAfter.dynamicCast<RArc>();
+//    if (!arcAfter.isNull()) {
+//        l = arcAfter->getLength();
+//        list = arcAfter->getPointsWithDistanceToEnd(l/10, RS::FromStart);
+//        if (!list.isEmpty()) {
+//            p = list[0];
+//            shapeAfter = QSharedPointer<RLine>(new RLine(arcAfter->getStartPoint(), p));
+//        }
+//    }
 
     if (shapeBefore.isNull() || shapeAfter.isNull()) {
         return RS::Any;
@@ -1232,17 +1271,40 @@ bool RPolyline::containsShape(const RShape& shape) const {
         return false;
     }
 
+    if (RShape::isPolylineShape(shape)) {
+        const RPolyline& pl = dynamic_cast<const RPolyline&>(shape);
+        for (int i=0; i<pl.countVertices() && i<5; i++) {
+            if (contains(pl.getVertexAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // check if the shape is completely inside the polygon.
     // this is the case if one point on the entity is inside the polygon
     // and the entity does not intersect with the polygon.
-    if (shape.isDirected()) {
+    else if (shape.isDirected()) {
         return contains(shape.getStartPoint()) && contains(shape.getEndPoint());
     }
     else {
-        // e.g. circle:
-        RVector pointOnShape = shape.getPointOnShape();
-        if (contains(pointOnShape, true)) {
-            return true;
+        // circle:
+        if (RShape::isCircleShape(shape)) {
+            const RCircle& circle = dynamic_cast<const RCircle&>(shape);
+            RVector p1 = circle.getCenter() + RVector(circle.getRadius(), 0);
+            RVector p2 = circle.getCenter() + RVector(-circle.getRadius(), 0);
+            if (contains(p1) || contains(p2)) {
+                return true;
+            }
+            return false;
+        }
+        else {
+            // other shapes:
+            RVector pointOnShape = shape.getPointOnShape();
+            if (contains(pointOnShape, true)) {
+                return true;
+            }
+            return false;
         }
     }
 
@@ -1387,61 +1449,6 @@ double RPolyline::getArea() const {
         ret = polylineProxy->getArea(*this, 0.01);
     }
     return ret;
-
-    /*
-     * \author Robert S.
-
-    // fails for certain cases
-    // see FS#1756 - Faults with the area of Polylines with arcs
-    RPolyline closedCopy = *this;
-    if (!closedCopy.isGeometricallyClosed()) {
-        closedCopy.setClosed(true);
-    }
-
-    // polygonal area (all segments treated as lines):
-    QList<RVector> pts = closedCopy.getVertices();
-    double area = 0;
-    int nPts = closedCopy.countVertices();
-    int j = nPts - 1;
-    RVector p1;
-    RVector p2;
-
-    for (int i=0; i<nPts; j=i++) {
-        p1 = pts[i];
-        p2 = pts[j];
-        area += p1.x * p2.y;
-        area -= p1.y * p2.x;
-    }
-    area /= 2;
-    area = fabs(area);
-
-    // add / subtract arc segment sector area:
-    if (closedCopy.hasArcSegments()) {
-        bool plReversed = (closedCopy.getOrientation()==RS::CW);
-        for (int i = 0; i < closedCopy.countSegments(); i++) {
-            if (closedCopy.isArcSegmentAt(i)) {
-                QSharedPointer<RShape> shape = closedCopy.getSegmentAt(i);
-                QSharedPointer<RArc> arc = shape.dynamicCast<RArc>();
-                if (!arc.isNull()) {
-                    double chordArea = arc->getChordArea();
-
-                    if (arc->isReversed()==plReversed) {
-                        // arc has same orientation as polyline: add
-                        area = area + chordArea;
-                    }
-                    else {
-                        // arc has opposite orientation of polyline: subtract
-                        area = area - chordArea;
-                    }
-                }
-            }
-        }
-    }
-
-    area = fabs(area);
-    //qDebug() << "error: " << fabs(area - control);
-    return area;
-    */
 }
 
 double RPolyline::getLength() const {
@@ -1567,6 +1574,16 @@ QList<RVector> RPolyline::getCenterPoints() const {
     return ret;
 }
 
+RVector RPolyline::getPointAtPercent(double p) const {
+    double length = getLength();
+    double distance = p * length;
+    QList<RVector> candidates = getPointsWithDistanceToEnd(distance, RS::FromStart|RS::AlongPolyline);
+    if (candidates.length()!=1) {
+        return RVector::invalid;
+    }
+    return candidates.at(0);
+}
+
 QList<RVector> RPolyline::getPointsWithDistanceToEnd(double distance, int from) const {
     QList<RVector> ret;
 
@@ -1627,6 +1644,18 @@ QList<RVector> RPolyline::getPointsWithDistanceToEnd(double distance, int from) 
         }
     }
 
+    return ret;
+}
+
+QList<RVector> RPolyline::getPointCloud(double segmentLength) const {
+    QList<RVector> ret;
+    for (int i=0; i<countSegments(); i++) {
+        QSharedPointer<RShape> seg = getSegmentAt(i);
+        if (seg.isNull()) {
+            continue;
+        }
+        ret.append(seg->getPointCloud(segmentLength));
+    }
     return ret;
 }
 
@@ -1772,6 +1801,37 @@ bool RPolyline::scale(double scaleFactor, const RVector& center) {
 }
 
 bool RPolyline::scale(const RVector& scaleFactors, const RVector& center) {
+    if (hasArcSegments() && !RMath::fuzzyCompare(scaleFactors.x, scaleFactors.y)) {
+        // non-uniform scaling of polyline with arcs:
+        RPolyline pl;
+        for (int i=0; i<countSegments(); i++) {
+            QSharedPointer<RShape> seg = getSegmentAt(i);
+            if (seg.isNull()) {
+                continue;
+            }
+
+            // TODO: apply widths to new segments:
+            //double w1 = getStartWidthAt(i);
+            //double w2 = getStartWidthAt((i+1)%countVertices());
+
+            QSharedPointer<RShape> newSeg;
+            if (RShape::isLineShape(*seg)) {
+                newSeg = seg;
+                newSeg->scale(scaleFactors, center);
+            }
+            else {
+                newSeg = RShape::scaleArc(*seg, scaleFactors, center);
+            }
+
+            if (!newSeg.isNull()) {
+                pl.appendShape(*newSeg);
+            }
+        }
+        // new polyline with tangentially connected small arc segments for original arc segments:
+        *this = pl;
+        return true;
+    }
+
     for (int i=0; i<vertices.size(); i++) {
         vertices[i].scale(scaleFactors, center);
     }
@@ -1898,8 +1958,6 @@ void RPolyline::print(QDebug dbg) const {
 }
 
 /**
- * TODO: use douglas peuker for polylines with only line segments
- *
  * Simplify by attempting to skip nodes within given tolerance.
  * \return True if nodes have been skipped.
  */
@@ -2005,6 +2063,10 @@ RPolyline RPolyline::modifyPolylineCorner(const RShape& trimmedShape1, RS::Endin
     }
 
     return pl;
+}
+
+bool RPolyline::isConcave() const {
+    return !getConcaveVertices().isEmpty();
 }
 
 QList<RVector> RPolyline::getConvexVertices(bool convex) const {
@@ -2113,6 +2175,13 @@ QList<RPolyline> RPolyline::morph(const RPolyline& target, int steps, RS::Easing
 RPolyline RPolyline::roundAllCorners(double radius) const {
     if (polylineProxy!=NULL) {
         return polylineProxy->roundAllCorners(*this, radius);
+    }
+    return *this;
+}
+
+RPolyline RPolyline::getPolygonHull(double angle, double tolerance, bool inner) const {
+    if (polylineProxy!=NULL) {
+        return polylineProxy->getPolygonHull(*this, angle, tolerance, inner);
     }
     return *this;
 }

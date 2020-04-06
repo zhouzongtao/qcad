@@ -95,6 +95,7 @@ SOURCES = \
 ../scripts/Draw/Circle/Circle2TP/Tests/Circle2TPTest00.js \
 ../scripts/Draw/Circle/Circle2TP/Tests/Circle2TPTest01.js \
 ../scripts/Draw/Circle/Circle2TP/Tests/Circle2TPTest02.js \
+../scripts/Draw/Circle/Circle2TP/Tests/Circle2TPTest03.js \
 ../scripts/Draw/Circle/Circle2TR/Circle2TR.js \
 ../scripts/Draw/Circle/Circle2TR/Circle2TRInit.js \
 ../scripts/Draw/Circle/Circle2TR/Tests/Circle2TRTest00.js \
@@ -199,6 +200,7 @@ SOURCES = \
 ../scripts/Draw/Hatch/HatchFromSelection/Tests/HatchFromSelectionTest05.js \
 ../scripts/Draw/Hatch/HatchFromSelection/Tests/HatchFromSelectionTest06.js \
 ../scripts/Draw/Hatch/HatchFromSelection/Tests/HatchFromSelectionTest07.js \
+../scripts/Draw/Hatch/HatchFromSelection/Tests/HatchFromSelectionTest08.js \
 ../scripts/Draw/Image/Image.js \
 ../scripts/Draw/Image/ImageInit.js \
 ../scripts/Draw/Image/Tests/ImageTest00.js \
@@ -560,6 +562,7 @@ SOURCES = \
 ../scripts/Misc/Examples/ListenerExamples/ListenerExamples.js \
 ../scripts/Misc/Examples/MathExamples/ExMandelbrot/ExMandelbrot.js \
 ../scripts/Misc/Examples/MathExamples/ExMathSpiral/ExMathSpiral.js \
+../scripts/Misc/Examples/MathExamples/FlexPainter/FlexPainter.js \
 ../scripts/Misc/Examples/MathExamples/MathExamples.js \
 ../scripts/Misc/Examples/ModifyExamples/ExDeleteObject/ExDeleteObject.js \
 ../scripts/Misc/Examples/ModifyExamples/ModifyExamples.js \
@@ -759,6 +762,7 @@ SOURCES = \
 ../scripts/Modify/Scale/Tests/ScaleTest06.js \
 ../scripts/Modify/Scale/Tests/ScaleTest07.js \
 ../scripts/Modify/Scale/Tests/ScaleTest08.js \
+../scripts/Modify/Scale/Tests/ScaleTest09.js \
 ../scripts/Modify/Stretch/Stretch.js \
 ../scripts/Modify/Stretch/StretchInit.js \
 ../scripts/Modify/Stretch/Tests/StretchTest00.js \
@@ -767,6 +771,9 @@ SOURCES = \
 ../scripts/Modify/Stretch/Tests/StretchTest03.js \
 ../scripts/Modify/Stretch/Tests/StretchTest05.js \
 ../scripts/Modify/Stretch/Tests/StretchTest06.js \
+../scripts/Modify/Stretch/Tests/StretchTest07.js \
+../scripts/Modify/Stretch/Tests/StretchTest08.js \
+../scripts/Modify/Stretch/Tests/StretchTest09.js \
 ../scripts/Modify/Transform.js \
 ../scripts/Modify/Translate/Tests/TranslateTest00.js \
 ../scripts/Modify/Translate/Tests/TranslateTest01.js \
@@ -964,6 +971,7 @@ SOURCES = \
 ../scripts/Widgets/LibraryBrowser/db/TagCategory.js \
 ../scripts/Widgets/LibraryBrowser/db/TagCategoryPeer.js \
 ../scripts/Widgets/LibraryBrowser/db/TagPeer.js \
+../scripts/Widgets/MenuBar/MenuBar.js \
 ../scripts/Widgets/MouseDisplay/MouseDisplay.js \
 ../scripts/Widgets/OptionsToolBar/OptionsToolBar.js \
 ../scripts/Widgets/PenToolBar/PenToolBar.js \
@@ -1101,6 +1109,7 @@ SOURCES = \
 ../scripts/Layer/AddLayer/PreferencesPage.ui \
 ../scripts/Layer/LayerDialog.ui \
 ../scripts/Misc/Examples/ExMinimal2/ExMinimal2.ui \
+../scripts/Misc/Examples/MathExamples/FlexPainter/FlexPainterDialog.ui \
 ../scripts/Misc/Examples/QtExamples/ExResizeWindow/ExResizeWindow.ui \
 ../scripts/Misc/Examples/QtExamples/ExWidget/MyWidget.ui \
 ../scripts/Misc/MiscDevelopment/EcmaScriptShell/EcmaScriptShell.ui \
@@ -1169,6 +1178,7 @@ SOURCES = \
 ../scripts/Widgets/LayerList/PreferencesPage.ui \
 ../scripts/Widgets/LibraryBrowser/LibraryBrowser.ui \
 ../scripts/Widgets/LibraryBrowser/PreferencesPage.ui \
+../scripts/Widgets/MenuBar/PreferencesPage.ui \
 ../scripts/Widgets/MouseDisplay/MouseDisplay.ui \
 ../scripts/Widgets/PenToolBar/PenToolBar.ui \
 ../scripts/Widgets/ProgressBar/ProgressBar.ui \

@@ -158,7 +158,7 @@ void RPainterPath::addSpline(const RSpline& spline) {
 
     for (int i=0; i<list.count(); i++) {
         QList<RVector> cps = list[i].getControlPoints();
-        // very rare splines of degree >=4:
+        // very rare splines of degree >= 4:
         if ((cps.size()>=5 && degree==cps.size()-1)) {
             QList<QSharedPointer<RShape> > segments = spline.getExploded(16);
             for (int k=0; k<segments.length(); k++) {
@@ -248,6 +248,11 @@ QList<QSharedPointer<RShape> > RPainterPath::getShapes() const {
         }
 
         cursor = el;
+    }
+
+    QList<RVector> points = getPoints();
+    for (int i=0; i<points.length(); i++) {
+        ret.append(QSharedPointer<RPoint>(new RPoint(points[i])));
     }
 
     return ret;
@@ -416,6 +421,14 @@ void RPainterPath::setNoColorMode(bool on) {
 
 bool RPainterPath::getNoColorMode() const {
     return getMode(RPainterPath::NoColorMode);
+}
+
+void RPainterPath::setSimplePointDisplay(bool on) {
+    setMode(RPainterPath::SimplePointDisplay, on);
+}
+
+bool RPainterPath::getSimplePointDisplay() const {
+    return getMode(RPainterPath::SimplePointDisplay);
 }
 
 void RPainterPath::setPixelWidth(bool on) {

@@ -172,6 +172,10 @@ public:
         return data.isArcSegmentAt(i);
     }
 
+    bool hasArcSegments() const {
+        return data.hasArcSegments();
+    }
+
     int getClosestSegment(const RVector& point) const {
         return data.getClosestSegment(point);
     }
@@ -196,12 +200,44 @@ public:
         data.setMinimumWidth(w);
     }
 
+    void setGlobalWidth(double w) {
+        data.setGlobalWidth(w);
+    }
+
+    void setStartWidthAt(int i, double w) {
+        data.setStartWidthAt(i, w);
+    }
+
     double getStartWidthAt(int i) const {
         return data.getStartWidthAt(i);
     }
 
+    void setEndWidthAt(int i, double w) {
+        data.setEndWidthAt(i, w);
+    }
+
     double getEndWidthAt(int i) const {
         return data.getEndWidthAt(i);
+    }
+
+    bool hasWidths() const {
+        return data.hasWidths();
+    }
+
+    void setStartWidths(const QList<double>& sw) {
+        data.setStartWidths(sw);
+    }
+
+    QList<double> getStartWidths() const {
+        return data.getStartWidths();
+    }
+
+    void setEndWidths(const QList<double>& ew) {
+        data.setEndWidths(ew);
+    }
+
+    QList<double> getEndWidths() const {
+        return data.getEndWidths();
     }
 
     double getDirection1() const {
@@ -330,6 +366,13 @@ public:
 
     QList<RPolyline> morph(const RPolyline& target, int steps) const {
         return data.morph(target, steps);
+    }
+
+    bool contains(const RVector& point, bool borderIsInside=false, double tolerance=RS::PointTolerance) const {
+        return data.contains(point, borderIsInside, tolerance);
+    }
+    bool containsShape(const RShape& shape) const {
+        return data.containsShape(shape);
     }
 
 protected:

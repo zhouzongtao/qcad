@@ -457,6 +457,9 @@
         getReferencePointShape
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
+        getPropertyEditorShowOnRequest
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
         getPolarCoordinateSeparator
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
@@ -464,6 +467,9 @@
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
         getRelativeCoordinatePrefix
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
+        isDarkMode
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
         hasDarkGuiBackground

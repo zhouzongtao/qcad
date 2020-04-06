@@ -173,11 +173,18 @@ public:
         data.update(entityId);
     }
 
-    QSharedPointer<REntity> queryEntity(REntity::Id entityId) const {
-        return data.queryEntity(entityId);
+    QSharedPointer<REntity> queryEntity(REntity::Id entityId, bool transform = false) const {
+        return data.queryEntity(entityId, transform);
     }
 
     bool applyTransformationTo(REntity& entity) const {
+        return data.applyTransformationTo(entity);
+    }
+
+    /**
+     * \nonscriptable
+     */
+    bool applyTransformationTo(QSharedPointer<REntity>& entity) const {
         return data.applyTransformationTo(entity);
     }
 

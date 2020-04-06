@@ -269,6 +269,16 @@
   
         // methods of 1st level base class RGraphicsViewImage:
         
+      int getNumThreads(
+                
+            );
+        
+    
+      void setNumThreads(
+                int n
+            );
+        
+    
       void clear(
                 
             );
@@ -571,8 +581,18 @@
             );
         
     
-      void paintEntity(
-                QPainter * painter, REntity::Id id, bool preview
+      void paintEntitiesMulti(
+                const RBox & queryBox
+            );
+        
+    
+      void paintEntitiesThread(
+                int threadId, QList < REntity::Id > & list, int start, int end
+            );
+        
+    
+      void paintEntityThread(
+                int threadId, REntity::Id id, bool preview
         = false
             );
         
@@ -633,6 +653,21 @@
     
       void setMinimumLineweight(
                 double lw
+            );
+        
+    
+      double getMinimumLineweight(
+                
+            );
+        
+    
+      void setMaximumLineweight(
+                double lw
+            );
+        
+    
+      double getMaximumLineweight(
+                
             );
         
     

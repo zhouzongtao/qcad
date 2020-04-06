@@ -59,6 +59,7 @@ RExporter::RExporter()
       clipping(false),
       pixelWidth(false),
       penCapStyle(Qt::RoundCap),
+      //combineTransforms(true),
       projectionRenderingHint(RS::RenderThreeD) {
 
     init();
@@ -78,6 +79,7 @@ RExporter::RExporter(RDocument& document, RMessageHandler *messageHandler, RProg
       clipping(false),
       pixelWidth(false),
       penCapStyle(Qt::RoundCap),
+      //combineTransforms(true),
       projectionRenderingHint(RS::RenderThreeD) {
 
     Q_UNUSED(messageHandler)
@@ -314,9 +316,20 @@ QBrush RExporter::getBrush() {
     return currentBrush;
 }
 
+RColor RExporter::getColor(const RColor& unresolvedColor) {
+    REntity* currentEntity = getEntity();
+    if (currentEntity == NULL) {
+        qWarning() << "no current entity";
+        return RColor();
+    }
+
+    return currentEntity->getColor(unresolvedColor, blockRefViewportStack);
+}
+
 RColor RExporter::getColor(bool resolve) {
     REntity* currentEntity = getEntity();
     if (currentEntity == NULL) {
+        qWarning() << "no current entity";
         return RColor();
     }
 
@@ -516,6 +529,7 @@ void RExporter::exportEntities(bool allBlocks, bool undone) {
     QSet<REntity::Id> ids = document->queryAllEntities(undone, allBlocks);
 
     // 20110815: ordered export (TODO: optional?):
+    // needed for order of block contents (DXF export tests)
     QList<REntity::Id> list = document->getStorage().orderBackToFront(ids);
 
     QList<REntity::Id>::iterator it;
@@ -1257,7 +1271,7 @@ void RExporter::exportArcSegment(const RArc& arc, bool allowForZeroLength) {
     double segmentLength;
     if (pixelSizeHint>0.0) {
         // approximate arc with segments with the length of 2 pixels:
-        segmentLength = pixelSizeHint * 2;
+        segmentLength = getCurrentPixelSizeHint() * 2;
     }
     else {
         segmentLength = arc.getRadius() / 40.0;
@@ -1374,7 +1388,7 @@ void RExporter::exportEllipse(const REllipse& ellipse, double offset) {
         if (a1>a2-RS::AngleTolerance) {
             a2+=2*M_PI;
         }
-        for(a=a1+aStep; a<=a2; a+=aStep) {
+        for (a=a1+aStep; a<=a2; a+=aStep) {
             vp.set(cp.x+cos(a)*radius1,
                    cp.y+sin(a)*radius2);
             vp.rotate(angle, vc);
@@ -1385,7 +1399,7 @@ void RExporter::exportEllipse(const REllipse& ellipse, double offset) {
         if (a1<a2+RS::AngleTolerance) {
             a2-=2*M_PI;
         }
-        for(a=a1-aStep; a>=a2; a-=aStep) {
+        for (a=a1-aStep; a>=a2; a-=aStep) {
             vp.set(cp.x+cos(a)*radius1,
                    cp.y+sin(a)*radius2);
             vp.rotate(angle, vc);
@@ -1605,6 +1619,36 @@ void RExporter::exportClipRectangle(const RBox& clipRectangle, bool forceSelecte
     Q_UNUSED(forceSelected)
 }
 
+void RExporter::exportTransform(const QTransform& t) {
+    Q_UNUSED(t)
+}
+
+void RExporter::exportEndTransform() {
+}
+
+void RExporter::exportTranslation(const RVector& offset) {
+    Q_UNUSED(offset)
+}
+
+void RExporter::exportEndTranslation() {
+}
+
+void RExporter::exportRotation(double angle) {
+    Q_UNUSED(angle)
+
+}
+
+void RExporter::exportEndRotation() {
+}
+
+void RExporter::exportScale(const RVector& factors) {
+    blockScales.push(qMax(qAbs(factors.x), qAbs(factors.y)));
+}
+
+void RExporter::exportEndScale() {
+    blockScales.pop();
+}
+
 double RExporter::getLineTypePatternScale(const RLinetypePattern& p) const {
     if (document==NULL) {
         return 1.0;
@@ -1786,4 +1830,21 @@ void RExporter::exportShapeSegment(QSharedPointer<RShape> shape, double angle) {
     }
 
     // TODO: ellipse
+}
+
+/**
+ * \return pixel size hint in context of current block.
+ */
+double RExporter::getCurrentPixelSizeHint() const {
+    double ret = pixelSizeHint;
+
+    // adjust pixel size hint, based on block context:
+    for (int i=0; i<blockScales.size(); i++) {
+        // blockScale array contains absolute values:
+        if (blockScales[i]>RS::PointTolerance) {
+            ret /= blockScales[i];
+        }
+    }
+
+    return ret;
 }

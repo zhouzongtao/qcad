@@ -4,10 +4,10 @@
 <context>
     <name>REntity</name>
     <message>
-        <location filename="../src/entity/RArcEntity.cpp" line="+88"/>
+        <location filename="../src/entity/RArcEntity.cpp" line="+90"/>
         <location line="+1"/>
         <location line="+1"/>
-        <location filename="../src/entity/RCircleEntity.cpp" line="+76"/>
+        <location filename="../src/entity/RCircleEntity.cpp" line="+77"/>
         <location line="+1"/>
         <location line="+1"/>
         <location filename="../src/entity/RDimAngularEntity.cpp" line="+107"/>
@@ -16,7 +16,7 @@
         <location filename="../src/entity/RDimRadialEntity.cpp" line="+103"/>
         <location line="+1"/>
         <location line="+1"/>
-        <location filename="../src/entity/REllipseEntity.cpp" line="+79"/>
+        <location filename="../src/entity/REllipseEntity.cpp" line="+80"/>
         <location line="+1"/>
         <location line="+1"/>
         <source>Center</source>
@@ -209,13 +209,13 @@
         <location line="+1"/>
         <location filename="../src/entity/REllipseEntity.cpp" line="-9"/>
         <source>Start Angle</source>
-        <translation>Start hoek</translation>
+        <translation>Starthoek</translation>
     </message>
     <message>
         <location line="+1"/>
         <location filename="../src/entity/REllipseEntity.cpp" line="+1"/>
         <source>End Angle</source>
-        <translation>Eind hoek</translation>
+        <translation>Eindhoek</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -340,7 +340,7 @@
         <location line="+1"/>
         <location line="+1"/>
         <source>Dimension Arc</source>
-        <translation>Maatboog</translation>
+        <translation>Bematingsboog</translation>
     </message>
     <message>
         <location filename="../src/entity/RDimDiametricEntity.cpp" line="-6"/>
@@ -418,14 +418,14 @@
         <location line="+1"/>
         <location line="+1"/>
         <source>Definition Point</source>
-        <translation>Definitie punt</translation>
+        <translation>Definitiepunt</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+1"/>
         <location line="+1"/>
         <source>Text Position</source>
-        <translation>Tekst positie</translation>
+        <translation>Tekstpositie</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -440,12 +440,12 @@
     <message>
         <location line="+2"/>
         <source>Fixed Extension Line</source>
-        <translation>Vaste verlengingslijn</translation>
+        <translation>Vaste verlenglijn</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Extension Line Length</source>
-        <translation>Lengte verlengingslijn</translation>
+        <translation>Extensielijnlengte</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -487,12 +487,12 @@
     <message>
         <location line="+1"/>
         <source>Start Parameter</source>
-        <translation>Start parameter</translation>
+        <translation>Startparameter</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>End Parameter</source>
-        <translation>Eind parameter</translation>
+        <translation>Eindparameter</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -611,12 +611,12 @@
     <message>
         <location line="+2"/>
         <source>Width Factor</source>
-        <translation>Breedte factor</translation>
+        <translation>Breedtefactor</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Height Factor</source>
-        <translation>Hoogte factor</translation>
+        <translation>Hoogtefactor</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -641,7 +641,7 @@
     <message>
         <location line="+1"/>
         <source>Arrow Block</source>
-        <translation>Pijl block</translation>
+        <translation>Pijlblock</translation>
     </message>
     <message>
         <source>Clockwise</source>
@@ -802,26 +802,26 @@
     <message>
         <location line="+6"/>
         <source>Use Start Tangent</source>
-        <translation>Start tangent gebruiken</translation>
+        <translation>Starttangente gebruiken</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+1"/>
         <location line="+1"/>
         <source>Start Tangent</source>
-        <translation>Start tangent</translation>
+        <translation>Starttangent</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Use End Tangent</source>
-        <translation>Eind tangent gebruiken</translation>
+        <translation>Eindtangent gebruiken</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+1"/>
         <location line="+1"/>
         <source>End Tangent</source>
-        <translation>Eind tangent</translation>
+        <translation>Eindtangent</translation>
     </message>
     <message>
         <source>Simple</source>
@@ -845,7 +845,7 @@
     </message>
     <message>
         <source>Text Angle</source>
-        <translation type="vanished">Tekst hoek</translation>
+        <translation type="vanished">Teksthoek</translation>
     </message>
     <message>
         <source>X Scale</source>
@@ -919,7 +919,7 @@
     <message>
         <location filename="../src/entity/RDimArcLengthEntity.cpp" line="+141"/>
         <source>Arc Symbol Type</source>
-        <translation>Boogsymbool Type</translation>
+        <translation>Boogsymbooltype</translation>
     </message>
 </context>
 </TS>

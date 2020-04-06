@@ -313,6 +313,11 @@ void RDocument::init(bool beforeLoad) {
         setVariable("PageSettings/ShowPaperBorders", RSettings::getBoolValue("PageSettings/ShowPaperBorders", true));
         //setVariable("PageSettings/ShowBoundingBox", RSettings::getBoolValue("PageSettings/ShowBoundingBox", false));
 
+        setVariable("PageTagSettings/EnablePageTags", RSettings::getBoolValue("PageTagSettings/EnablePageTags", false));
+        setVariable("PageTagSettings/TagAlignment", RSettings::getValue("PageTagSettings/TagAlignment", "Inside"));
+        setVariable("PageTagSettings/TagFont", RSettings::getValue("PageTagSettings/TagFont", QFont("Arial", 10)));
+        setVariable("PageTagSettings/TagPosition", RSettings::getValue("PageTagSettings/TagPosition", "TopLeft"));
+
         // grid settings:
         QString s;
         for (int i=0; i<4; i++) {
@@ -1179,7 +1184,7 @@ const RSpatialIndex& RDocument::getSpatialIndex() const {
     return spatialIndex;
 }
 
-RSpatialIndex* RDocument::getSpatialIndexForBlock(RBlock::Id blockId) {
+RSpatialIndex* RDocument::getSpatialIndexForBlock(RBlock::Id blockId) const {
     if (disableSpatialIndicesByBlock) {
         return &spatialIndex;
     }
@@ -1190,7 +1195,7 @@ RSpatialIndex* RDocument::getSpatialIndexForBlock(RBlock::Id blockId) {
     return spatialIndicesByBlock[blockId];
 }
 
-RSpatialIndex* RDocument::getSpatialIndexForCurrentBlock() {
+RSpatialIndex* RDocument::getSpatialIndexForCurrentBlock() const {
     RBlock::Id currentBlockId = getCurrentBlockId();
     return getSpatialIndexForBlock(currentBlockId);
 }
@@ -1463,7 +1468,7 @@ REntity::Id RDocument::queryClosestXY(
     return ret;
 }
 
-QSet<REntity::Id> RDocument::queryInfiniteEntities() {
+QSet<REntity::Id> RDocument::queryInfiniteEntities() const {
     return storage.queryInfiniteEntities();
 }
 
@@ -1475,7 +1480,7 @@ QSet<REntity::Id> RDocument::queryInfiniteEntities() {
  * \param result Set of IDs of entities that are completely inside the
  *      given area.
  */
-QSet<REntity::Id> RDocument::queryContainedEntities(const RBox& box) {
+QSet<REntity::Id> RDocument::queryContainedEntities(const RBox& box) const {
     RSpatialIndex* si = getSpatialIndexForCurrentBlock();
     QSet<REntity::Id> ret = si->queryContained(box).keys().toSet();
 
@@ -1486,27 +1491,119 @@ QSet<REntity::Id> RDocument::queryContainedEntities(const RBox& box) {
 }
 
 
+QSet<REntity::Id> RDocument::queryIntersectedEntitiesXYFast(const RBox& box) {
+    RBox boxExpanded = box;
+    boxExpanded.c1.z = RMINDOUBLE;
+    boxExpanded.c2.z = RMAXDOUBLE;
+
+    // box contains bounding box of this document:
+    // return all visible entities:
+    if (boxExpanded.contains(getBoundingBox())) {
+        QSet<REntity::Id> ids;
+        //RDebug::startTimer(70);
+        ids = queryAllVisibleEntities();
+        //RDebug::stopTimer(70, "queryAllVisibleEntities");
+        return ids;
+    }
+
+    return queryIntersectedShapesXYFast(boxExpanded);
+}
+
+QSet<REntity::Id> RDocument::queryIntersectedShapesXYFast(const RBox& box, bool noInfiniteEntities) {
+    // always include construction lines (XLine):
+    QSet<REntity::Id> infinites;
+    if (!noInfiniteEntities) {
+        infinites = queryInfiniteEntities();
+    }
+
+    // box is completely outside the bounding box of this document:
+    if (box.isOutside(getBoundingBox())) {
+        return infinites;
+    }
+
+    RSpatialIndex* si = getSpatialIndexForBlock(getCurrentBlockId());
+    //RDebug::startTimer(120);
+    QSet<REntity::Id> candidates = si->queryIntersected(box).keys().toSet();
+    //RDebug::stopTimer(120, "si->queryIntersected");
+    candidates.unite(infinites);
+
+    QSet<REntity::Id> res;
+    QSet<REntity::Id>::iterator it;
+    for (it=candidates.begin(); it!=candidates.end(); ++it) {
+        if (RMouseEvent::hasMouseMoved()) {
+            return QSet<REntity::Id>();
+        }
+
+        QSharedPointer<REntity> entity;
+        entity = queryVisibleEntityDirect(*it);
+        if (entity.isNull()) {
+            continue;
+        }
+
+        if (!entity->isVisible()) {
+            continue;
+        }
+
+        res.insert(*it);
+    }
+
+    return res;
+}
+
 QSet<REntity::Id> RDocument::queryIntersectedEntitiesXY(
         const RBox& box, bool checkBoundingBoxOnly, bool includeLockedLayers, RBlock::Id blockId,
-        const QList<RS::EntityType>& filter, bool selectedOnly) {
+        const QList<RS::EntityType>& filter, bool selectedOnly) const {
+
+    bool onlyVisible = false;
+
+    RBox boxExpanded = box;
+    boxExpanded.c1.z = RMINDOUBLE;
+    boxExpanded.c2.z = RMAXDOUBLE;
+
+    if (blockId==RBlock::INVALID_ID) {
+        blockId = getCurrentBlockId();
+        onlyVisible = true;
+    }
+    bool usingCurrentBlock = (blockId == getCurrentBlockId());
+
+    // box contains bounding box of this document:
+    // return all visible entities:
+    if (usingCurrentBlock && boxExpanded.contains(getBoundingBox())) {
+        QSet<REntity::Id> ids;
+        if (onlyVisible) {
+            //RDebug::startTimer(70);
+            ids = queryAllVisibleEntities();
+            //RDebug::stopTimer(70, "queryAllVisibleEntities");
+            //qDebug() << "all visible ids:" << ids;
+        }
+        else {
+            ids = queryAllEntities(false, false);
+        }
+
+        return ids;
+    }
 
     return queryIntersectedShapesXY(box, checkBoundingBoxOnly, includeLockedLayers, blockId, filter, selectedOnly).keys().toSet();
 }
 
 QMap<REntity::Id, QSet<int> > RDocument::queryIntersectedShapesXY(
         const RBox& box, bool checkBoundingBoxOnly, bool includeLockedLayers, RBlock::Id blockId,
-        const QList<RS::EntityType>& filter, bool selectedOnly) {
+        const QList<RS::EntityType>& filter, bool selectedOnly) const {
+
+    bool onlyVisible = false;
 
     QSet<RS::EntityType> filterSet = filter.toSet();
     RBox boxExpanded = box;
     boxExpanded.c1.z = RMINDOUBLE;
     boxExpanded.c2.z = RMAXDOUBLE;
-    bool usingCurrentBlock = false;
+    //bool usingCurrentBlock = false;
     if (blockId==RBlock::INVALID_ID) {
         blockId = getCurrentBlockId();
+        onlyVisible = true;
+        //qDebug() << "onlyVisible:" << onlyVisible;
     }
 
-    usingCurrentBlock = (blockId == getCurrentBlockId());
+    bool usingCurrentBlock = (blockId == getCurrentBlockId());
 
     // always include construction lines (XLine):
     QMap<REntity::Id, QSet<int> > infinites;
@@ -1527,7 +1624,13 @@ QMap<REntity::Id, QSet<int> > RDocument::queryIntersectedShapesXY(
 
     // box contains bounding box of this document:
     if (usingCurrentBlock && boxExpanded.contains(getBoundingBox())) {
-        QSet<REntity::Id> ids = queryAllEntities(false, false);
+        QSet<REntity::Id> ids;
+        if (onlyVisible) {
+            ids = queryAllVisibleEntities();
+        }
+        else {
+            ids = queryAllEntities(false, false);
+        }
         QSet<REntity::Id>::iterator it;
         for (it=ids.begin(); it!=ids.end(); it++) {
             candidates.insert(*it, QSet<int>());
@@ -1557,29 +1660,38 @@ QMap<REntity::Id, QSet<int> > RDocument::queryIntersectedShapesXY(
         if (RMouseEvent::hasMouseMoved()) {
             return QMap<REntity::Id, QSet<int> >();
         }
-        QSharedPointer<REntity> entity = queryEntityDirect(it.key());
+
+        QSharedPointer<REntity> entity;
+        if (onlyVisible) {
+            entity = queryVisibleEntityDirect(it.key());
+        }
+        else {
+            entity = queryEntityDirect(it.key());
+        }
         if (entity.isNull()) {
             continue;
         }
 
-        // undone:
-        if (entity->isUndone()) {
-            continue;
-        }
+        if (!onlyVisible) {
+            // undone:
+            if (entity->isUndone()) {
+                continue;
+            }
 
-        // not on current or given block:
-        if (entity->getBlockId()!=blockId) {
-            continue;
+            // not on current or given block:
+            if (entity->getBlockId()!=blockId) {
+                continue;
+            }
+
+            if (!entity->isVisible()) {
+                continue;
+            }
         }
 
         if (selectedOnly) {
             if (!entity->isSelected()) {
                 continue;
             }
-        }
-
-        if (!entity->isVisible()) {
-            continue;
         }
 
         // layer is off:
@@ -1654,7 +1766,7 @@ QMap<REntity::Id, QSet<int> > RDocument::queryIntersectedShapesXY(
 }
 
 
-QSet<REntity::Id> RDocument::queryContainedEntitiesXY(const RBox& box) {
+QSet<REntity::Id> RDocument::queryContainedEntitiesXY(const RBox& box) const {
     RBox boxExpanded = box;
     boxExpanded.c1.z = RMINDOUBLE;
     boxExpanded.c2.z = RMAXDOUBLE;
@@ -1755,7 +1867,7 @@ QSet<REntity::Id> RDocument::queryEntitiesContainedXYIntersectedZ(const RBox& bo
  *
  * \return Set of IDs of all selected entities.
  */
-QSet<REntity::Id> RDocument::querySelectedEntities() {
+QSet<REntity::Id> RDocument::querySelectedEntities() const {
     return storage.querySelectedEntities();
 }
 
@@ -1932,7 +2044,9 @@ QSharedPointer<REntity> RDocument::queryEntityDirect(REntity::Id entityId) const
     return storage.queryEntityDirect(entityId);
 }
 
-
+QSharedPointer<REntity> RDocument::queryVisibleEntityDirect(REntity::Id entityId) const {
+    return storage.queryVisibleEntityDirect(entityId);
+}
 
 /**
  * Queries the UCS with the given ID.
@@ -2248,6 +2362,13 @@ bool RDocument::isEntityLayerFrozen(REntity::Id entityId) const {
     }
 
     return storage.isLayerFrozen(entity->getLayerId());
+}
+
+/**
+ * \copydoc RStorage::isEntityVisible
+ */
+bool RDocument::isEntityVisible(const REntity& entity, RObject::Id blockId) const {
+    return storage.isEntityVisible(entity, blockId);
 }
 
 /**

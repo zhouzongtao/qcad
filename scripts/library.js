@@ -167,7 +167,7 @@ function isString(obj) {
  * \return true if the given object is an RVector object.
  */
 function isVector(obj) {
-    return (typeof(obj)==="object" && obj.toString().startsWith("RVector"));
+    return (typeof(obj)==="object" && isOfType(obj, RVector));
 }
 
 /**
@@ -1844,38 +1844,43 @@ function stringToDirectDistanceEntry(relativeZero, cursorPosition, str) {
  * Creates and returns a new entity based on the given shape.
  */
 function shapeToEntity(document, shape) {
-    if (isPointShape(shape)) {
-        return new RPointEntity(document, new RPointData(shape.getPosition()));
-    }
-    else if (isLineShape(shape)) {
-        return new RLineEntity(document, new RLineData(shape));
-    }
-    else if (isRayShape(shape)) {
-        return new RRayEntity(document, new RRayData(shape));
-    }
-    else if (isXLineShape(shape)) {
-        return new RXLineEntity(document, new RXLineData(shape));
-    }
-    else if (isArcShape(shape)) {
-        return new RArcEntity(document, new RArcData(shape));
-    }
-    else if (isCircleShape(shape)) {
-        return new RCircleEntity(document, new RCircleData(shape));
-    }
-    else if (isEllipseShape(shape)) {
-        return new REllipseEntity(document, new REllipseData(shape));
-    }
-    else if (isPolylineShape(shape)) {
-        return new RPolylineEntity(document, new RPolylineData(shape));
-    }
-    else if (isSplineShape(shape)) {
-        return new RSplineEntity(document, new RSplineData(shape));
-    }
-    else if (isTriangleShape(shape)) {
-        return new RSolidEntity(document, new RSolidData(shape));
+    var s = shape;
+    if (isFunction(s.data)) {
+        s = s.data();
     }
 
-    qWarning("shapeToEntity: unknown shape: ", shape);
+    if (isPointShape(s)) {
+        return new RPointEntity(document, new RPointData(s.getPosition()));
+    }
+    else if (isLineShape(s)) {
+        return new RLineEntity(document, new RLineData(s));
+    }
+    else if (isRayShape(s)) {
+        return new RRayEntity(document, new RRayData(s));
+    }
+    else if (isXLineShape(s)) {
+        return new RXLineEntity(document, new RXLineData(s));
+    }
+    else if (isArcShape(s)) {
+        return new RArcEntity(document, new RArcData(s));
+    }
+    else if (isCircleShape(s)) {
+        return new RCircleEntity(document, new RCircleData(s));
+    }
+    else if (isEllipseShape(s)) {
+        return new REllipseEntity(document, new REllipseData(s));
+    }
+    else if (isPolylineShape(s)) {
+        return new RPolylineEntity(document, new RPolylineData(s));
+    }
+    else if (isSplineShape(s)) {
+        return new RSplineEntity(document, new RSplineData(s));
+    }
+    else if (isTriangleShape(s)) {
+        return new RSolidEntity(document, new RSolidData(s));
+    }
+
+    qWarning("shapeToEntity: unknown shape: ", s);
     return undefined;
 }
 
@@ -2401,17 +2406,22 @@ function applyTheme() {
             var postfix = postfixes[i];
             var fn = path + "stylesheet" + postfix + ".css";
             qDebug("trying to load theme stylesheet: ", fn);
+
             if (new QFileInfo(fn).exists()) {
-                var file = new QFile(fn);
-                var flags = new QIODevice.OpenMode(QIODevice.ReadOnly | QIODevice.Text);
-                if (file.open(flags)) {
-                    var textStream = new QTextStream(file);
-                    var allLines = textStream.readAll();
-                    file.close();
-                    allLines = allLines.replace(/url\(/g, "url(" + path);
-                    qApp.styleSheet = qApp.styleSheet + "\n" + allLines;
-                    found = true;
+                var css = readTextFile(fn);
+                if (css.contains("RequiresPlugin:true")) {
+                    // only load theme if plugin loaded:
+                    var pluginId = theme.toUpperCase() + "STYLE";
+                    if (!RPluginLoader.hasPlugin(pluginId)) {
+                        qWarning("Theme not loaded: ", theme);
+                        qWarning("Theme plugin not found:", pluginId);
+                        return;
+                    }
                 }
+
+                css = css.replace(/url\(/g, "url(" + path);
+                qApp.styleSheet = qApp.styleSheet + "\n" + css;
+                found = true;
             }
         }
 
@@ -2428,6 +2438,7 @@ function readTextFile(fileName) {
     var flags = new QIODevice.OpenMode(QIODevice.ReadOnly | QIODevice.Text);
     if (file.open(flags)) {
         var textStream = new QTextStream(file);
+        textStream.setCodec("UTF-8");
         var contents = textStream.readAll();
         file.close();
         return contents;
@@ -2441,6 +2452,7 @@ function writeTextFile(fileName, str) {
     var flags = new QIODevice.OpenMode(QIODevice.WriteOnly | QIODevice.Text);
     if (file.open(flags)) {
         var textStream = new QTextStream(file);
+        textStream.setCodec("UTF-8");
         textStream.writeString(str);
     }
     file.close();

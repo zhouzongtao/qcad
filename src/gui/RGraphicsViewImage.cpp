@@ -19,6 +19,12 @@
 #include <QtCore>
 #include <QPainter>
 
+#if QT_VERSION >= 0x050000
+#include <QtConcurrent>
+#else
+#include <qtconcurrentrun.h>
+#endif
+
 #include "RDebug.h"
 #include "RDocument.h"
 #include "RDocumentInterface.h"
@@ -42,6 +48,7 @@
 
 RGraphicsViewImage::RGraphicsViewImage()
     : RGraphicsView(),
+      numThreads(1),
       panOptimization(false),
       sceneQt(NULL),
       lastSize(0,0),
@@ -55,6 +62,7 @@ RGraphicsViewImage::RGraphicsViewImage()
       colorCorrection(false),
       colorThreshold(10),
       minimumLineweight(0.0),
+      maximumLineweight(-1.0),
       drawingScale(1.0),
       alphaEnabled(false),
       showOnlyPlottable(false) {
@@ -67,12 +75,20 @@ RGraphicsViewImage::RGraphicsViewImage()
 RGraphicsViewImage::~RGraphicsViewImage() {
 }
 
+void RGraphicsViewImage::setNumThreads(int n) {
+    numThreads = n;
+    graphicsBufferThread.clear();
+    updateGraphicsBuffer();
+    lastSize = QSize(0,0);
+}
+
 void RGraphicsViewImage::clear() {
-    QPainter* painter = new QPainter(&graphicsBuffer);
-    // erase background to transparent:
-    painter->setCompositionMode(QPainter::CompositionMode_Clear);
-    painter->eraseRect(graphicsBuffer.rect());
-    delete painter;
+    for (int i=0; i<graphicsBufferThread.length(); i++) {
+        QPainter painter(&graphicsBufferThread[i]);
+        // erase background to background color:
+        painter.setCompositionMode(QPainter::CompositionMode_Clear);
+        painter.eraseRect(graphicsBufferThread[i].rect());
+    }
 }
 
 void RGraphicsViewImage::setPaintOrigin(bool val) {
@@ -163,7 +179,10 @@ void RGraphicsViewImage::updateImage() {
         return;
     }
 
+
     if (graphicsBufferNeedsUpdate) {
+        //RDebug::startTimer(77);
+
         // update drawing scale from document setting:
         QString scaleString;
         if (doc->getCurrentBlockId()==doc->getModelSpaceBlockId()) {
@@ -247,28 +266,45 @@ void RGraphicsViewImage::updateImage() {
         }
         else {
         */
-            paintErase(graphicsBuffer);
+        if (!graphicsBufferThread.isEmpty()) {
+            paintErase(graphicsBufferThread.first());
+            //paintErase(graphicsBuffer2);
             bool originBelowEntities = RSettings::getShowLargeOriginAxis();
             if (originBelowEntities) {
-                paintOrigin(graphicsBuffer);
+                paintOrigin(graphicsBufferThread.first());
             }
+
+            //RDebug::startTimer();
             paintDocument();
+            //RDebug::stopTimer("paintDocument");
+
             if (displayGrid) {
-                paintMetaGrid(graphicsBuffer);
-                paintGrid(graphicsBuffer);
+                paintMetaGrid(graphicsBufferThread.last());
+                paintGrid(graphicsBufferThread.last());
             }
             if (!originBelowEntities) {
-                paintOrigin(graphicsBuffer);
+                paintOrigin(graphicsBufferThread.last());
             }
-        //}
+        }
         lastOffset = offset;
         lastFactor = factor;
 
         //RDebug::stopTimer("update graphics view");
         //qDebug() << "updateImage: OK";
+        //RDebug::stopTimer(77, "updateImage");
     }
 
-    graphicsBufferWithPreview = graphicsBuffer;
+    //RDebug::startTimer();
+
+    if (!graphicsBufferThread.isEmpty()) {
+        graphicsBufferWithPreview = graphicsBufferThread.first();
+        QPainter p(&graphicsBufferWithPreview);
+        p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+        for (int i=1; i<graphicsBufferThread.length(); i++) {
+            p.drawImage(0, 0, graphicsBufferThread[i]);
+        }
+    }
+    //RDebug::stopTimer("compose");
 
     // draws previewed texts:
 //    QList<RTextBasedData> previewTexts = sceneQt->getPreviewTexts();
@@ -293,11 +329,17 @@ void RGraphicsViewImage::updateImage() {
     // highlighted entities are also part of the preview
     if (sceneQt->hasPreview()) {
         QPainter* painter = initPainter(graphicsBufferWithPreview, false);
+
+        painterThread.clear();
+        painterThread.append(painter);
+        entityTransformThread.clear();
+        entityTransformThread.append(QStack<QTransform>());
+
         bgColorLightness = getBackgroundColor().lightness();
         isSelected = false;
         QList<REntity::Id> ids = sceneQt->getPreviewEntityIds();
         for (int i=0; i<ids.length(); i++) {
-            paintEntity(painter, ids[i], true);
+            paintEntityThread(0, ids[i], true);
         }
         painter->end();
         delete painter;
@@ -461,6 +503,9 @@ void RGraphicsViewImage::paintErase(QPaintDevice& device, const QRect& rect) {
     gridPainter->setBackground(getBackgroundColor());
     if (!rect.isNull()) {
         gridPainter->setClipRect(rf);
+    }
+    if (backgroundColor.alpha()==0) {
+        gridPainter->setCompositionMode(QPainter::CompositionMode_Clear);
     }
     gridPainter->eraseRect(rf);
 
@@ -665,10 +710,25 @@ void RGraphicsViewImage::updateTransformation() const {
  */
 void RGraphicsViewImage::updateGraphicsBuffer() {
     double dpr = getDevicePixelRatio();
-    QSize newSize(getWidth()*dpr, getHeight()*dpr);
+    QSize newSize(int(getWidth()*dpr), int(getHeight()*dpr));
 
-    if (lastSize!=newSize && graphicsBuffer.size()!=newSize) {
-        graphicsBuffer = QImage(newSize, alphaEnabled ? QImage::Format_ARGB32 : QImage::Format_RGB32);
+    if (graphicsBufferThread.isEmpty()) {
+        for (int i=0; i<numThreads; i++) {
+            graphicsBufferThread.append(QImage());
+        }
+    }
+
+    if (lastSize!=newSize && graphicsBufferThread.first().size()!=newSize) {
+        //graphicsBuffer = QImage(newSize, alphaEnabled ? QImage::Format_ARGB32 : QImage::Format_RGB32);
+        //graphicsBuffer2 = QImage(newSize, QImage::Format_ARGB32);
+        for (int i=0; i<graphicsBufferThread.length(); i++) {
+            if (i==0) {
+                graphicsBufferThread[i] = QImage(newSize, alphaEnabled ? QImage::Format_ARGB32 : QImage::Format_RGB32);
+            }
+            else {
+                graphicsBufferThread[i] = QImage(newSize, QImage::Format_ARGB32);
+            }
+        }
         lastFactor = -1;
     }
 
@@ -689,16 +749,25 @@ void RGraphicsViewImage::paintDocument(const QRect& rect) {
     bgColorLightness = getBackgroundColor().lightness();
     selectedIds.clear();
 
-    QPainter* painter;
-    painter = initPainter(graphicsBuffer, false, false, r);
+    for (int i=1; i<graphicsBufferThread.length(); i++) {
+        graphicsBufferThread[i].fill(qRgba(0,0,0,0));
+    }
 
-    paintBackground(painter, r);
+    //QList<QPainter*> painterThread;
+    painterThread.clear();
+    entityTransformThread.clear();
+    for (int i=0; i<graphicsBufferThread.length(); i++) {
+        painterThread.append(initPainter(graphicsBufferThread[i], false, false, r));
+        entityTransformThread.append(QStack<QTransform>());
+    }
+
+    paintBackground(painterThread.first(), r);
 
     RVector c1 = mapFromView(RVector(r.left()-1,r.bottom()+1), -1e300);
     RVector c2 = mapFromView(RVector(r.right()+1,r.top()-1), 1e300);
     RBox queryBox(c1, c2);
 
-    paintEntities(painter, queryBox);
+    paintEntitiesMulti(queryBox);
 
     // paint selected entities on top:
     if (!selectedIds.isEmpty()) {
@@ -706,15 +775,25 @@ void RGraphicsViewImage::paintDocument(const QRect& rect) {
         QList<REntity::Id> list = document->getStorage().orderBackToFront(selectedIds);
         QListIterator<RObject::Id> i(list);
         while (i.hasNext()) {
-            paintEntity(painter, i.next());
+            paintEntityThread(painterThread.length()-1, i.next());
         }
     }
 
     // paint overlay:
-    paintOverlay(painter);
+    paintOverlay(painterThread.last());
 
-    painter->end();
-    delete painter;
+    for (int i=0; i<painterThread.length(); i++) {
+        painterThread[i]->end();
+        delete painterThread[i];
+        painterThread[i] = NULL;
+    }
+    painterThread.clear();
+    entityTransformThread.clear();
+
+//    painter->end();
+//    painter2->end();
+//    delete painter;
+//    delete painter2;
 
 //    // paint reference points of selected entities:
 //    QMultiMap<REntity::Id, RRefPoint>& referencePoints = scene->getReferencePoints();
@@ -749,6 +828,10 @@ void RGraphicsViewImage::setBackgroundTransform(double bgFactor, const RVector& 
 
 void RGraphicsViewImage::paintBackground(QPainter* painter, const QRect& rect) {
     Q_UNUSED(rect);
+
+    if (backgroundDecoration.isEmpty()) {
+        return;
+    }
 
     QTransform savedTransform = painter->transform();
     painter->translate(backgroundOffset.x, backgroundOffset.y);
@@ -866,7 +949,7 @@ QPainter* RGraphicsViewImage::initPainter(QPaintDevice& device, bool erase, bool
         if (rect.isNull()) {
             r = QRect(0,0,lastSize.width(),lastSize.height());
         }
-        // erase background to transparent:
+        // erase background to background color:
         painter->setCompositionMode(QPainter::CompositionMode_Clear);
         painter->eraseRect(r);
         painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
@@ -884,6 +967,15 @@ QPainter* RGraphicsViewImage::initPainter(QPaintDevice& device, bool erase, bool
 }
 
 void RGraphicsViewImage::paintEntities(QPainter* painter, const RBox& queryBox) {
+    painterThread.clear();
+    painterThread.append(painter);
+    entityTransformThread.clear();
+    entityTransformThread.append(QStack<QTransform>());
+
+    paintEntitiesMulti(queryBox);
+}
+
+void RGraphicsViewImage::paintEntitiesMulti(const RBox& queryBox) {
     RDocument* document = getDocument();
     if (document==NULL) {
         return;
@@ -906,23 +998,21 @@ void RGraphicsViewImage::paintEntities(QPainter* painter, const RBox& queryBox) 
         )
     );
 
-    //RDebug::startTimer();
-    mutexSi.lock();
+    //RDebug::startTimer(60);
+    //mutexSi.lock();
     QSet<REntity::Id> ids;
-
-    ids = document->queryIntersectedEntitiesXY(qb, true);
-
+    ids = document->queryIntersectedEntitiesXYFast(qb);
     //qDebug() << "RGraphicsViewImage::paintEntities: ids: " << ids;
-
-    mutexSi.unlock();
-    //RDebug::stopTimer("spatial index");
+    //mutexSi.unlock();
+    //RDebug::stopTimer(60, "spatial index");
 
     // draw painter paths:
     isSelected = false;
 
-    //RDebug::startTimer();
+    //RDebug::startTimer(60);
     QList<REntity::Id> list = document->getStorage().orderBackToFront(ids);
-    //RDebug::stopTimer("ordering");
+    //QList<REntity::Id> list = ids.toList();
+    //RDebug::stopTimer(60, "ordering");
 
     //RDebug::startTimer();
 
@@ -940,22 +1030,101 @@ void RGraphicsViewImage::paintEntities(QPainter* painter, const RBox& queryBox) 
                     );
     }
 
-    QListIterator<REntity::Id> it(list);
-    while (it.hasNext()) {
-        paintEntity(painter, it.next());
+    double ps = mapDistanceFromView(1.0);
+    // ideal pixel size for rendering arc at current zoom level:
+    if (isPrintingOrExporting()) {
+        ps = getScene()->getPixelSizeHint();
     }
 
-    //RDebug::stopTimer("painting");
+    // regen arcs, xlines, rays if necessary:
+    for (int i=0; i<list.length(); i++) {
+        REntity::Id id = list[i];
+
+        // get drawables of the given entity:
+        QList<RGraphicsSceneDrawable> drawables = sceneQt->getDrawables(id);
+
+        // before multi threading:
+        // if at least one arc path is too detailed or not detailed enough,
+        // or the path is an XLine or Ray, regen:
+
+        // do we need to regen the path?
+        bool regen = false;
+        if (drawables.isEmpty()) {
+            // entity was last outside visible area, needs regen to reappear:
+            regen = true;
+        }
+        else {
+            for (int p=0; p<drawables.size(); p++) {
+                RGraphicsSceneDrawable& drawable = drawables[p];
+                if (drawable.getType()==RGraphicsSceneDrawable::PainterPath) {
+                    if (drawable.getPainterPath().getAlwaysRegen()==true) {
+                        regen = true;
+                        break;
+                    }
+                    if (drawable.getPainterPath().getAutoRegen()==true) {
+                        if (drawable.getPainterPath().getPixelSizeHint()>RS::PointTolerance &&
+                           (drawable.getPainterPath().getPixelSizeHint()<ps/5 ||
+                            drawable.getPainterPath().getPixelSizeHint()>ps*5)) {
+
+                            regen = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // regen:
+        if (regen) {
+            sceneQt->exportEntity(id, true);
+            //drawables = sceneQt->getDrawables(id);
+        }
+    }
+
+    Q_ASSERT(painterThread.length()==entityTransformThread.length());
+
+    //RDebug::startTimer(100);
+    //qDebug() << "list.length():" << list.length();
+    int slice = int(floor(double(list.length())/painterThread.length()));
+    QList<QFuture<void> > futureThread;
+    for (int threadId=0; threadId<painterThread.length(); threadId++) {
+        int start = threadId*slice;
+        int end = (threadId+1)*slice;
+        if (threadId==painterThread.length()-1) {
+            end = list.length();
+        }
+        //qDebug() << "slice:" << start << end;
+        futureThread.append(QtConcurrent::run(this, &RGraphicsViewImage::paintEntitiesThread, threadId, list, start, end));
+    }
+    //RDebug::stopTimer(100, "launch threads");
+
+    //RDebug::startTimer(100);
+    for (int i=0; i<futureThread.length(); i++) {
+        futureThread[i].waitForFinished();
+    }
+    //RDebug::stopTimer(100, "waitForFinished");
 }
 
-void RGraphicsViewImage::paintEntity(QPainter* painter, REntity::Id id, bool preview) {
+void RGraphicsViewImage::paintEntitiesThread(int threadId, QList<REntity::Id>& list, int start, int end) {
+    for (int i=start; i<end; i++) {
+        paintEntityThread(threadId, list[i]);
+    }
+}
+
+void RGraphicsViewImage::paintEntityThread(int threadId, REntity::Id id, bool preview) {
     if (!preview && !isPrintingOrExporting() && !isSelected && getDocument()->isSelected(id)) {
         static QMutex m;
         m.lock();
+        // remember selected entities to overlay in the end:
         selectedIds.insert(id);
         m.unlock();
         return;
     }
+
+    Q_ASSERT(threadId<painterThread.length());
+    Q_ASSERT(threadId<entityTransformThread.length());
+
+    QPainter* painter = painterThread[threadId];
 
     // clipping:
     RBox clipRectangle = sceneQt->getClipRectangle(id, preview);
@@ -1004,40 +1173,42 @@ void RGraphicsViewImage::paintEntity(QPainter* painter, REntity::Id id, bool pre
         // get drawables of the given entity:
         drawables = sceneQt->getDrawables(id);
 
-        // if at least one arc path is too detailed or not detailed enough,
-        // or the path is an XLine or Ray, regen:
+//        // TODO: move to part before multi threading:
+//        // if at least one arc path is too detailed or not detailed enough,
+//        // or the path is an XLine or Ray, regen:
 
-        // ideal pixel size for rendering arc at current zoom level:
-        double ps = mapDistanceFromView(1.0);
-        if (isPrintingOrExporting()) {
-            ps = getScene()->getPixelSizeHint();
-        }
+//        // ideal pixel size for rendering arc at current zoom level:
+//        double ps = mapDistanceFromView(1.0);
+//        if (isPrintingOrExporting()) {
+//            ps = getScene()->getPixelSizeHint();
+//        }
 
-        // do we need to regen the path?
-        bool regen = false;
+//        // do we need to regen the path?
+//        bool regen = false;
 
-        for (int p=0; p<drawables.size(); p++) {
-            if (drawables.at(p).getType()==RGraphicsSceneDrawable::PainterPath) {
-                if (drawables.at(p).getPainterPath().getAlwaysRegen()==true) {
-                    regen = true;
-                    break;
-                }
-                if (drawables.at(p).getPainterPath().getAutoRegen()==true) {
-                    if (drawables.at(p).getPainterPath().getPixelSizeHint()>RS::PointTolerance &&
-                            (drawables.at(p).getPainterPath().getPixelSizeHint()<ps/5 || drawables.at(p).getPainterPath().getPixelSizeHint()>ps*5)) {
+//        for (int p=0; p<drawables.size(); p++) {
+//            if (drawables.at(p).getType()==RGraphicsSceneDrawable::PainterPath) {
+//                if (drawables.at(p).getPainterPath().getAlwaysRegen()==true) {
+//                    regen = true;
+//                    break;
+//                }
+//                if (drawables.at(p).getPainterPath().getAutoRegen()==true) {
+//                    if (drawables.at(p).getPainterPath().getPixelSizeHint()>RS::PointTolerance &&
+//                            (drawables.at(p).getPainterPath().getPixelSizeHint()<ps/5 || drawables.at(p).getPainterPath().getPixelSizeHint()>ps*5)) {
 
-                        regen = true;
-                        break;
-                    }
-                }
-            }
-        }
+//                        regen = true;
+//                        break;
+//                    }
+//                }
+//            }
+//        }
 
-        // regen:
-        if (regen) {
-            sceneQt->exportEntity(id, true);
-            drawables = sceneQt->getDrawables(id);
-        }
+//        // regen:
+//        if (regen) {
+//            // TODO: breaks multithreading:
+//            //sceneQt->exportEntity(id, true);
+//            //drawables = sceneQt->getDrawables(id);
+//        }
     }
 
     // paint drawables (painter paths, texts, images):
@@ -1046,7 +1217,7 @@ void RGraphicsViewImage::paintEntity(QPainter* painter, REntity::Id id, bool pre
         RGraphicsSceneDrawable drawable = i.next();
 
         // drawable is not plottable (from layer for which plottable is off):
-        if (drawable.getNoPlot() && (isPrintingOrExporting() || (showOnlyPlottable && isPrintPreview()))) {
+        if (drawable.getNoPlot() && (isPrinting() || (showOnlyPlottable && isPrintPreview()))) {
             continue;
         }
 
@@ -1058,8 +1229,32 @@ void RGraphicsViewImage::paintEntity(QPainter* painter, REntity::Id id, bool pre
             }
             RImageData image = drawable.getImage();
             image.move(drawable.getOffset());
-            image.move(paintOffset);
+
+            if (entityTransformThread[threadId].isEmpty()) {
+                image.move(paintOffset);
+            }
+            else {
+                // transform (image in block reference):
+                painter->save();
+                for (int k=0; k<entityTransformThread[threadId].size(); k++) {
+                    if (k==0) {
+                        // paintOffset must be applied here to get the correct placement for
+                        // texts with non-uniform scale:
+                        QTransform tt;
+                        tt.translate(paintOffset.x, paintOffset.y);
+                        painter->setTransform(tt, true);
+                    }
+
+                    QTransform t = entityTransformThread[threadId][k];
+                    painter->setTransform(t, true);
+                }
+            }
+
             paintImage(painter, image);
+
+            if (!entityTransformThread[threadId].isEmpty()) {
+                painter->restore();
+            }
         }
 
         // TTF text block (CAD text block is painter path):
@@ -1071,12 +1266,49 @@ void RGraphicsViewImage::paintEntity(QPainter* painter, REntity::Id id, bool pre
             }
 
             text.move(drawable.getOffset());
-            text.move(paintOffset);
+            if (entityTransformThread[threadId].isEmpty()) {
+                text.move(paintOffset);
+            }
+            else {
+                // transform (text in block reference):
+                painter->save();
+                for (int k=0; k<entityTransformThread[threadId].size(); k++) {
+                    if (k==0) {
+                        // paintOffset must be applied here to get the correct placement for
+                        // texts with non-uniform scale:
+                        QTransform tt;
+                        tt.translate(paintOffset.x, paintOffset.y);
+                        painter->setTransform(tt, true);
+                    }
+
+                    QTransform t = entityTransformThread[threadId][k];
+                    painter->setTransform(t, true);
+                }
+            }
 
             paintText(painter, text);
+
+            if (!entityTransformThread[threadId].isEmpty()) {
+                painter->restore();
+            }
         }
 
-        // unknown drawable or already handled:
+        // Transform:
+        if (drawable.getType()==RGraphicsSceneDrawable::Transform) {
+            QTransform transform = drawable.getTransform();
+            entityTransformThread[threadId].push(transform);
+        }
+
+        if (drawable.getType()==RGraphicsSceneDrawable::EndTransform) {
+            if (!entityTransformThread[threadId].isEmpty()) {
+                entityTransformThread[threadId].pop();
+            }
+            else {
+                qWarning() << "pop transform: stack empty";
+            }
+        }
+
+        // unknown drawable or already handled (image, text, transform, end transform):
         if (drawable.getType()!=RGraphicsSceneDrawable::PainterPath) {
             continue;
         }
@@ -1085,6 +1317,13 @@ void RGraphicsViewImage::paintEntity(QPainter* painter, REntity::Id id, bool pre
         RPainterPath path = drawable.getPainterPath();
         if (!path.isSane()) {
             continue;
+        }
+
+        // local transform of entity (e.g. block reference transforms):
+        if (!entityTransformThread[threadId].isEmpty()) {
+            for (int k=entityTransformThread[threadId].size()-1; k>=0; k--) {
+                path.transform(entityTransformThread[threadId][k]);
+            }
         }
 
         if (drawable.getPixelUnit() || path.getPixelUnit()) {
@@ -1302,17 +1541,35 @@ void RGraphicsViewImage::paintEntity(QPainter* painter, REntity::Id id, bool pre
 
         // draw points:
         if (path.hasPoints()) {
+            if (path.getSimplePointDisplay()) {
+                double ps = getScene()->getPixelSizeHint();
+                // simple point mode for hatch patterns:
+                // force point display as points:
+                QList<RVector> points = path.getPoints();
+                QList<RVector>::iterator it;
+                for (it=points.begin(); it<points.end(); it++) {
+                    RVector p = *it;
+
+                    // draws lines at higher zoom levels:
+                    //drawDot(painter, QPointF(p.x, p.y));
+
+                    painter->drawLine(QLineF(p.x, p.y, p.x + ps, p.y));
+                }
+                continue;
+            }
+
             double pSize = getDocument()->getKnownVariable(RS::PDSIZE, 0).toDouble();
             pSize = getPointSize(pSize);
             int pMode = getDocument()->getKnownVariable(RS::PDMODE, 0).toInt();
 
             // FS#481: for printing, point size does not depend on current viewing factor:
-            if (isPrintingOrExporting() || isPrintPreview()) {
+            if (isPrinting() || isPrintPreview()) {
                 pMode = 0;
             }
             else {
                 // When not printing, set pen width to zero so when zooming in
                 // the lines don't turn into a blob
+                // This also applies when exporting (e.g. to bitmap):
                 QPen pen = painter->pen();
                 pen.setWidth(0);
                 painter->setPen(pen);
@@ -1374,6 +1631,9 @@ void RGraphicsViewImage::applyMinimumLineweight(QPen& pen) {
     if (minimumLineweight>1.0e-6 && pen.widthF()<minimumLineweight) {
         pen.setWidthF(minimumLineweight);
     }
+    if (maximumLineweight>-0.1 && pen.widthF()>maximumLineweight) {
+        pen.setWidthF(maximumLineweight);
+    }
 }
 
 void RGraphicsViewImage::applyColorCorrection(QPen& pen) {
@@ -1410,12 +1670,12 @@ void RGraphicsViewImage::applyColorMode(QPen& pen) {
     switch (colorMode) {
     case RGraphicsView::BlackWhite:
         // dark background: everything white:
-        if (bgColorLightness < 64 && !isPrintingOrExporting()) {
+        if (bgColorLightness < 64 && !isPrinting()) {
             if (pen.style() != Qt::NoPen) {
                 pen.setColor(Qt::white);
             }
         }
-        // bright background: everything black:
+        // bright background or printing: everything black:
         else {
             if (pen.style() != Qt::NoPen) {
                 pen.setColor(Qt::black);
@@ -1476,10 +1736,11 @@ double RGraphicsViewImage::getPointSize(double pSize) {
 
 void RGraphicsViewImage::drawDot(QPainter* painter, QPointF pt) {
     qreal r;
-    if (isPrintingOrExporting() || isPrintPreview()) {
+    if (isPrinting() || isPrintPreview()) {
         RDocument* doc = getDocument();
         r = RUnit::convert(doc->getVariable("PageSettings/PointSize", 0.5, true).toDouble()/2.0, RS::Millimeter, doc->getUnit());
     } else {
+        // screen rendering / (bitmap) exporting
         r = mapDistanceFromView(1.5);
     }
     painter->setBrush(painter->pen().color());
@@ -1697,7 +1958,12 @@ void RGraphicsViewImage::paintText(QPainter* painter, RTextBasedData& text) {
             }
             textLayout.layout->setTextOption(o);
 
-            textLayout.layout->draw(painter, QPoint(0,0));
+            // TODO:
+            {
+                static QMutex m;
+                QMutexLocker ml(&m);
+                textLayout.layout->draw(painter, QPoint(0,0));
+            }
 
             painter->restore();
         }
@@ -1708,15 +1974,30 @@ void RGraphicsViewImage::paintText(QPainter* painter, RTextBasedData& text) {
 
 
 int RGraphicsViewImage::getWidth() const {
-    return graphicsBuffer.width();
+    if (graphicsBufferThread.isEmpty()) {
+        return 100;
+    }
+    return graphicsBufferThread.first().width();
 }
 
 int RGraphicsViewImage::getHeight() const {
-    return graphicsBuffer.height();
+    if (graphicsBufferThread.isEmpty()) {
+        return 100;
+    }
+    return graphicsBufferThread.first().height();
 }
 
 void RGraphicsViewImage::resizeImage(int w, int h) {
-    graphicsBuffer = QImage(QSize(w,h), alphaEnabled ? QImage::Format_ARGB32 : QImage::Format_RGB32);
+    //graphicsBuffer = QImage(QSize(w,h), alphaEnabled ? QImage::Format_ARGB32 : QImage::Format_RGB32);
+
+    for (int i=0; i<graphicsBufferThread.length(); i++) {
+        if (i==0) {
+            graphicsBufferThread[i] = QImage(QSize(w,h), alphaEnabled ? QImage::Format_ARGB32 : QImage::Format_RGB32);
+        }
+        else {
+            graphicsBufferThread[i] = QImage(QSize(w,h), QImage::Format_ARGB32);
+        }
+    }
 }
 
 void RGraphicsViewImage::setPanOptimization(bool on) {

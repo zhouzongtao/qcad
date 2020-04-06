@@ -380,8 +380,15 @@ void RHatchEntity::print(QDebug dbg) const {
         QList<QSharedPointer<RShape> > loop = data.boundary.at(i);
         for (int k=0; k<loop.size(); ++k) {
             QSharedPointer<RShape> shape = loop.at(k);
-            dbg.nospace() << *shape << "\n";
+            dbg.nospace() << "   " << shape->getStartPoint() << ", " << shape->getEndPoint() << "\n";
         }
     }
     dbg.nospace() << ")";
+}
+
+void RHatchEntity::setViewportContext(const RViewportData& vp) {
+    // apply viewport transforms:
+    RVector offs =  vp.getViewCenter()*vp.getScale() + vp.getViewTarget()*vp.getScale() - data.getOriginPoint()*vp.getScale();
+    offs.rotate(vp.getRotation());
+    data.setOriginPoint(vp.getCenter() - offs);
 }

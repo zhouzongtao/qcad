@@ -135,6 +135,8 @@ public:
 
     virtual RBox getBoundingBox(bool ignoreEmpty=false) const;
 
+    void copyAttributesFrom(const REntityData& entityData, bool copyBlockId = true);
+
     virtual void to2D();
     virtual void setZ(double z);
 
@@ -287,6 +289,7 @@ public:
         return color;
     }
 
+    virtual RColor getColor(const RColor& unresolvedColor, const QStack<REntity *>& blockRefStack) const;
     virtual RColor getColor(bool resolve, const QStack<REntity *>& blockRefStack) const;
 
     virtual RColor getDisplayColor() {
@@ -315,6 +318,7 @@ public:
     virtual QList<RVector> getEndPoints(const RBox& queryBox = RDEFAULT_RBOX) const;
     virtual QList<RVector> getMiddlePoints(const RBox& queryBox = RDEFAULT_RBOX) const;
     virtual QList<RVector> getCenterPoints(const RBox& queryBox = RDEFAULT_RBOX) const;
+    virtual QList<RVector> getArcReferencePoints(const RBox& queryBox = RDEFAULT_RBOX) const;
     virtual QList<RVector> getPointsWithDistanceToEnd(
         double distance, int from = RS::FromAny, const RBox& queryBox = RDEFAULT_RBOX) const;
 

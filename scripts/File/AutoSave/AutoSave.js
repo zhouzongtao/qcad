@@ -97,6 +97,11 @@ AutoSave.init = function(basePath) {
  * Called periodically to perform an auto save of the current document.
  */
 AutoSave.autoSave = function() {
+    var appWin = EAction.getMainWindow();
+    if (appWin.property("DisableAutoSave")==true) {
+        return;
+    }
+
     var filterStrings = RFileExporterRegistry.getFilterStrings();
     if (filterStrings.length===0) {
         // don't attempt autosave if no filters are available to save:
@@ -132,16 +137,19 @@ AutoSave.autoSave = function() {
 
     fi = new QFileInfo(bakFileName);
 
+    var failed = true;
+
     // temp file name to make sure that a failed save does not overwrite
     // a good save (e.g. /home/tux/data/~~file.dxf):
     var tmpBakFileName = fi.absolutePath() + QDir.separator + "~" + fi.fileName();
-    var failed = true;
-
-    if (documentInterface.exportFile(tmpBakFileName, fileVersion, false)) {
-        var bakFile = new QFile(bakFileName);
-        var tmpBakFile = new QFile(tmpBakFileName);
-        if ((!bakFile.exists() || bakFile.remove()) && tmpBakFile.rename(bakFileName)) {
-            failed = false;
+    var fiDir = new QFileInfo(fi.absolutePath());
+    if (fiDir.isWritable()) {
+        if (documentInterface.exportFile(tmpBakFileName, fileVersion, false)) {
+            var bakFile = new QFile(bakFileName);
+            var tmpBakFile = new QFile(tmpBakFileName);
+            if ((!bakFile.exists() || bakFile.remove()) && tmpBakFile.rename(bakFileName)) {
+                failed = false;
+            }
         }
     }
 

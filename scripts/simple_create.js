@@ -32,6 +32,22 @@ function setCurrentColor(color) {
 }
 
 /**
+ * Checks if the given layer exists.
+ * \ingroup ecma_simple
+ *
+ * \code
+ * hasLayer("MyLayer1")
+ * \endcode
+ */
+function hasLayer(name) {
+    var doc = getTransactionDocument();
+    if (isNull(doc)) {
+        return false;
+    }
+    return doc.hasLayer(name);
+}
+
+/**
  * Adds a layer to the drawing.
  * \ingroup ecma_simple
  *
@@ -132,6 +148,33 @@ function addLine(startPoint, endPoint) {
 }
 
 /**
+ * Adds an infinite line to the drawing.
+ * The two vectors are the base point and the direction vector
+ * (point relative to base point)
+ * \ingroup ecma_simple
+ *
+ * \code
+ * addXLine(x1,y1, dx,dy)
+ * addXLine([x1,y1], [dx,dy])
+ * addXLine(new RVector(x1,y1), new RVector(dx,dy))
+ * \endcode
+ */
+function addXLine(startPoint, directionVector) {
+    if (arguments.length===4) {
+        return addXLine(new RVector(arguments[0], arguments[1]), new RVector(arguments[2], arguments[3]));
+    }
+
+    if (isArray(startPoint)) {
+        startPoint = new RVector(startPoint);
+    }
+    if (isArray(directionVector)) {
+        directionVector = new RVector(directionVector);
+    }
+
+    return addShape(new RXLine(startPoint, directionVector));
+}
+
+/**
  * Adds an arc to the drawing.
  * \ingroup ecma_simple
  *
@@ -196,8 +239,8 @@ function addCircle(center, radius) {
  * \code
  * addPolyline([[x1,y1],[x2,y2],[x3,y3]], false)
  * addPolyline([ [ 100 , 0 ], [ 20 , -10 , 1 ], [ 0 , 40 , 0 , true ], [ -20 , -10 , 1 , true ] ])
- * addPolyline([new RVector(x1,y1)],new RVector(x2,y2),new RVector(x3,y3)], closed, relative)
- * addPolyline([new RVector(x1,y1),bulge1,rel1],[new RVector(x2,y2),bulge2,rel2],[new RVector(x3,y3),bulge3,rel3]], closed, relative)
+ * addPolyline([new RVector(x1,y1),new RVector(x2,y2),new RVector(x3,y3)], closed, relative)
+ * addPolyline([[new RVector(x1,y1),bulge1,rel1],[new RVector(x2,y2),bulge2,rel2],[new RVector(x3,y3),bulge3,rel3]], closed, relative)
  * \endcode
  */
 function addPolyline(points, closed, relative) {
@@ -221,22 +264,36 @@ function addPolyline(points, closed, relative) {
             v0 = points[i];
         }
         // first item in vertex tuple is RVector or x,y pair:
-        else if (isVector(points[i][0])) {
-            v0 = points[i][0];
-            if (!isNull(points[i][1])) {
-                b = points[i][1];
+        else if (isArray(points[i])) {
+            if (isVector(points[i][0])) {
+                v0 = points[i][0];
+                if (!isNull(points[i][1])) {
+                    b = points[i][1];
+                }
+                if (!isNull(points[i][2])) {
+                    rel = points[i][2];
+                }
             }
-            if (!isNull(points[i][2])) {
-                rel = points[i][2];
+            else {
+                v0 = new RVector(points[i][0], points[i][1]);
+                if (!isNull(points[i][2])) {
+                    b = points[i][2];
+                }
+                if (!isNull(points[i][3])) {
+                    rel = points[i][3];
+                }
             }
         }
-        else {
-            v0 = new RVector(points[i][0], points[i][1]);
-            if (!isNull(points[i][2])) {
-                b = points[i][2];
+        // custom objects with .x, .y (, .z, .b) members:
+        else if (isNumber(points[i].x) && isNumber(points[i].y)) {
+            if (isNumber(points[i].z)) {
+                v0 = new RVector(points[i].x, points[i].y, points[i].z);
             }
-            if (!isNull(points[i][3])) {
-                rel = points[i][3];
+            else {
+                v0 = new RVector(points[i].x, points[i].y);
+            }
+            if (isNumber(points[i].b)) {
+                b = points[i].b;
             }
         }
 
@@ -263,7 +320,7 @@ function addPolyline(points, closed, relative) {
  *
  * \code
  * addSpline([[x1,y1],[x2,y2],[x3,y3]], false)
- * addSpline([new RVector(x1,y1)],new RVector(x2,y2),new RVector(x3,y3)], false)
+ * addSpline([new RVector(x1,y1),new RVector(x2,y2),new RVector(x3,y3)], false)
  * \endcode
  */
 function addSpline(points, closed) {

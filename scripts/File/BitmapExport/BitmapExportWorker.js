@@ -39,6 +39,7 @@
  *  - properties["entityIds"]: Array: zoom to bounding box of given entities
  *  - properties["initView"]: Callback to initialize view
  *  - properties["zoomAll"]: Auto zoom to all entities, including those on invisible layers
+ *  - properties["metaData"]: Key / value pairs of meta data to write to image header
  *
  * \param view Optional graphics view to use.
  */
@@ -51,6 +52,10 @@ function exportBitmap(doc, scene, fileName, properties, view) {
         view.setScene(scene, false);
         viewCreated = true;
     }
+    var numThreadsOri = view.getNumThreads();
+
+    // crashes with multiple threads:
+    view.setNumThreads(1);
     view.setAlphaEnabled(true);
 
     view.setPaintOrigin(properties["origin"]==null ? false : properties["origin"]);
@@ -113,6 +118,7 @@ function exportBitmap(doc, scene, fileName, properties, view) {
     if (properties["width"] * properties["height"] > 2147483647/4) {
         qDebug("invalid image size");
         ret = [ false, qsTr("Invalid image size (width x height must be less than %1)").arg(536870911) ];
+        view.setNumThreads(numThreadsOri);
         return ret;
     }
 
@@ -129,7 +135,7 @@ function exportBitmap(doc, scene, fileName, properties, view) {
         view.zoomToEntities(properties["entityIds"], properties["margin"]);
     }
     else {
-        view.autoZoom(properties["margin"], true, false);
+        view.autoZoom(properties["margin"], true, properties["noWeightMargin"]);
     }
 
     // make sure we use the desired resolution:
@@ -154,6 +160,7 @@ function exportBitmap(doc, scene, fileName, properties, view) {
     // export file
     var buffer = view.getBuffer();
 
+    view.setNumThreads(numThreadsOri);
     if (viewCreated) {
         scene.unregisterView(view);
         view.destroy();
@@ -169,6 +176,13 @@ function exportBitmap(doc, scene, fileName, properties, view) {
         iw.setCompression(1);
     } else if (ext === "bmp") {
         iw.setCompression(1);
+    }
+
+    if (isArray(properties["metaData"])) {
+        for (var i=0; i<properties["metaData"].length; i++) {
+            // meta data:
+            iw.setText(properties["metaData"][0], properties["metaData"][1]);
+        }
     }
 
     if (!iw.write(buffer)) {

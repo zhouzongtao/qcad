@@ -301,7 +301,13 @@
         getCenterPoints
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
+        getPointAtPercent
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
         getPointsWithDistanceToEnd
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
+        getPointCloud
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
         getAngleAt
@@ -406,6 +412,9 @@
         modifyPolylineCorner
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
+        isConcave
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
         getConvexVertices
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
@@ -437,6 +446,9 @@
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
         roundAllCorners
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
+        getPolygonHull
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
         hasProxy

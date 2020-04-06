@@ -62,7 +62,7 @@ public:
     virtual QSet<RBlock::Id> queryAllLayouts(bool undone);
     virtual QSet<RView::Id> queryAllViews(bool undone = false);
     virtual QSet<RLinetype::Id> queryAllLinetypes();
-    virtual QSet<REntity::Id> queryInfiniteEntities();
+    virtual QSet<REntity::Id> queryInfiniteEntities() const;
     virtual QSet<REntity::Id> querySelectedEntities() const;
 
     virtual QSet<REntity::Id> queryLayerEntities(RLayer::Id layerId, bool allBlocks = false);
@@ -70,9 +70,9 @@ public:
     virtual QSet<REntity::Id> queryBlockEntities(RBlock::Id blockId);
     virtual QSet<REntity::Id> queryLayerBlockEntities(RLayer::Id layerId, RBlock::Id blockId);
     virtual QSet<REntity::Id> queryChildEntities(REntity::Id parentId, RS::EntityType type = RS::EntityAll);
-    virtual bool hasChildEntities(REntity::Id parentId);
-    virtual QSet<REntity::Id> queryBlockReferences(RBlock::Id blockId);
-    virtual QSet<REntity::Id> queryAllBlockReferences();
+    virtual bool hasChildEntities(REntity::Id parentId) const;
+    virtual QSet<REntity::Id> queryBlockReferences(RBlock::Id blockId) const;
+    virtual QSet<REntity::Id> queryAllBlockReferences() const;
     //virtual QSet<REntity::Id> queryViewEntities(RView::Id viewId);
 
     virtual QSharedPointer<RDocumentVariables> queryDocumentVariables() const;
@@ -98,6 +98,9 @@ public:
     virtual QSharedPointer<RLinetype> queryLinetype(RLinetype::Id linetypeId) const;
     virtual QSharedPointer<RLinetype> queryLinetype(const QString& linetypeName) const;
 
+    void clearVisibleCache();
+    void updateVisibleCache() const;
+
     void clearSelectionCache();
     void updateSelectedEntityMap() const;
     void updateSelectedLayerMap() const;
@@ -117,6 +120,8 @@ public:
     void setEntitySelected(QSharedPointer<REntity> entity, bool on,
         QSet<REntity::Id>* affectedEntities = NULL, bool onlyDescend = false);
     virtual bool isSelected(REntity::Id entityId);
+
+    virtual bool isEntityVisible(const REntity& entity) const;
 
     virtual bool hasSelection() const;
 
@@ -183,6 +188,7 @@ public:
 
     virtual QSharedPointer<RObject> queryObjectDirect(RObject::Id objectId) const;
     virtual QSharedPointer<REntity> queryEntityDirect(REntity::Id objectId) const;
+    virtual QSharedPointer<REntity> queryVisibleEntityDirect(REntity::Id objectId) const;
     virtual QSharedPointer<RUcs> queryUcsDirect(RUcs::Id ucsId) const;
     virtual QSharedPointer<RLayer> queryLayerDirect(RLayer::Id layerId) const;
     virtual QSharedPointer<RLayerState> queryLayerStateDirect(RLayerState::Id layerStateId) const;
@@ -226,10 +232,13 @@ protected:
     QHash<REntity::Id, QSharedPointer<REntity> > entityMap;
     mutable QHash<REntity::Id, QSharedPointer<REntity> > selectedEntityMap;
     mutable bool selectedEntityMapDirty;
+    mutable QHash<REntity::Id, QSharedPointer<REntity> > visibleEntityMap;
+    mutable bool visibleEntityMapDirty;
     mutable QHash<RLayer::Id, QSharedPointer<RLayer> > selectedLayerMap;
     mutable bool selectedLayerMapDirty;
-    QHash<RBlock::Id, QHash<REntity::Id, QSharedPointer<REntity> > > blockEntityMap;
+    mutable QHash<RBlock::Id, QHash<REntity::Id, QSharedPointer<REntity> > > blockEntityMap;
     QHash<RBlock::Id, QSharedPointer<RBlock> > blockMap;
+    QHash<RS::EntityType, QHash<RObject::Id, QSharedPointer<RObject> > > typeObjectMap;
     QHash<RLayer::Id, QSharedPointer<RLayer> > layerMap;
     QHash<QString, QSharedPointer<RLayer> > layerNameMap;
     QHash<RLayerState::Id, QSharedPointer<RLayerState> > layerStateMap;

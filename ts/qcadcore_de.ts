@@ -363,8 +363,8 @@
         <translation>Attribute</translation>
     </message>
     <message>
-        <location filename="../src/core/REntity.cpp" line="+87"/>
-        <location filename="../src/core/RObject.cpp" line="+67"/>
+        <location filename="../src/core/REntity.cpp" line="+91"/>
+        <location filename="../src/core/RObject.cpp" line="+68"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
@@ -393,7 +393,7 @@
         <location line="+1"/>
         <location filename="../src/core/RLayer.cpp" line="+1"/>
         <source>Lineweight</source>
-        <translation>Linienstärke</translation>
+        <translation>Linienbreite</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -463,6 +463,11 @@
         <location line="+1"/>
         <source>Selected</source>
         <translation>Ausgewählt</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Invisible</source>
+        <translation>Unsichtbar</translation>
     </message>
     <message>
         <location filename="../src/core/REntity.cpp" line="+2"/>
@@ -682,7 +687,7 @@
         <translation type="obsolete">Plot Papiergrösse</translation>
     </message>
     <message>
-        <location filename="../src/core/RBlockReferenceData.cpp" line="+651"/>
+        <location filename="../src/core/RBlockReferenceData.cpp" line="+852"/>
         <source>Circular (recursive) block referencing detected:</source>
         <translation>Circuläre (rekursive) Blockreferenzierung detektiert:</translation>
     </message>
@@ -738,7 +743,7 @@
     </message>
     <message>
         <source>Lineweight</source>
-        <translation type="vanished">Linienstärke</translation>
+        <translation type="vanished">Linienbreite</translation>
     </message>
 </context>
 <context>
@@ -828,7 +833,7 @@
         <translation type="vanished">Rahmen (gross)</translation>
     </message>
     <message>
-        <location filename="../src/core/RLinetype.cpp" line="+48"/>
+        <location filename="../src/core/RLinetype.cpp" line="+52"/>
         <source>Name</source>
         <translation>Name</translation>
     </message>
@@ -851,7 +856,7 @@
 <context>
     <name>RLinetypePattern</name>
     <message>
-        <location filename="../src/core/RLinetypePattern.cpp" line="+856"/>
+        <location filename="../src/core/RLinetypePattern.cpp" line="+869"/>
         <source>By Layer</source>
         <translation>Von Layer</translation>
     </message>

@@ -51,6 +51,12 @@
 
         // methods of secondary base class RGraphicsViewImage:
         static  QScriptValue
+        getNumThreads
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
+        setNumThreads
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
         clear
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
@@ -225,7 +231,13 @@
         paintEntities
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
-        paintEntity
+        paintEntitiesMulti
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
+        paintEntitiesThread
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
+        paintEntityThread
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
         paintOverlay
@@ -259,6 +271,15 @@
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
         setMinimumLineweight
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
+        getMinimumLineweight
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
+        setMaximumLineweight
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
+        getMaximumLineweight
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
         setPaintOffset

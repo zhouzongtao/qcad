@@ -207,9 +207,17 @@ Print.prototype.printCurrentBlock = function(printer, painter) {
 
     // set background color of view to match printing preference:
     var bgColor = this.view.getBackgroundColor();
+    var scale = Print.getScale(this.document);
 
     this.view.setBackgroundColor(Print.getBackgroundColor(this.document));
     this.view.setPrinting(true);
+    // 20191007: avoid invisible lines in prints and PDF output:
+    var minLineweightSet = false;
+    if (this.view.getMinimumLineweight()<RS.PointTolerance) {
+        // no minimum lineweight defined: force minimum lineweight of 0.01mm for printing:
+        this.view.setMinimumLineweight(RUnit.convert(0.01/scale, RS.Millimeter, this.document.getUnit()));
+        minLineweightSet = true;
+    }
 
     var draftMode = false;
     var screenBasedLinetypes = false;
@@ -235,12 +243,19 @@ Print.prototype.printCurrentBlock = function(printer, painter) {
     );
 
     // printer calibration:
-    printerFactor.x *= RSettings.getDoubleValue(printer.printerName() + "/FactorX", 1.0);
-    printerFactor.y *= RSettings.getDoubleValue(printer.printerName() + "/FactorY", 1.0);
+    var printerName = printer.printerName();
+    if (printerName.length===0) {
+        if (printer.outputFileName().length!==0) {
+            // PDF output:
+            printerName = "PDF";
+        }
+    }
+
+    printerFactor.x *= RSettings.getDoubleValue(printerName + "/FactorX", 1.0);
+    printerFactor.y *= RSettings.getDoubleValue(printerName + "/FactorY", 1.0);
 
     this.view.setPrintPointSize(new RVector(1.0/printerFactor.x, 1.0/printerFactor.y));
 
-    var scale = Print.getScale(this.document);
     var offset = Print.getOffset(this.document);
 
     var previousPixelSizeHint = this.scene.getPixelSizeHint();
@@ -336,6 +351,9 @@ Print.prototype.printCurrentBlock = function(printer, painter) {
 
     this.view.setBackgroundColor(bgColor);
     this.view.setPrinting(false);
+    if (minLineweightSet) {
+        this.view.setMinimumLineweight(0.0);
+    }
 
     //return true;
 };
@@ -389,7 +407,7 @@ Print.autoFitDrawing = function(di) {
     var document = di.getDocument();
     // drawing bounding box in drawing units:
     var bBox = document.getBoundingBox(true, true);
-    qDebug("bb: ", bBox);
+    //qDebug("bb: ", bBox);
     Print.autoFitBox(di, bBox);
     Print.centerBox(di, bBox);
 };
@@ -435,7 +453,7 @@ Print.autoFitBox = function(di, bBox) {
         f = 1.0;
     }
 
-    qDebug("f:", f);
+    //qDebug("f:", f);
 
     Print.setScale(di, f);
     Print.centerBox(di, bBox);

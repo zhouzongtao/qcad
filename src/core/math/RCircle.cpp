@@ -173,12 +173,28 @@ QList<RVector> RCircle::getCenterPoints() const {
     return ret;
 }
 
+QList<RVector> RCircle::getArcReferencePoints() const {
+    QList<RVector> ret;
+
+    ret.append(center + RVector(radius, 0));
+    ret.append(center + RVector(0, radius));
+    ret.append(center - RVector(radius, 0));
+    ret.append(center - RVector(0, radius));
+
+    return ret;
+}
+
 QList<RVector> RCircle::getPointsWithDistanceToEnd(double distance, int from) const {
     Q_UNUSED(distance)
     Q_UNUSED(from)
 
     QList<RVector> ret;
     return ret;
+}
+
+QList<RVector> RCircle::getPointCloud(double segmentLength) const {
+    RArc arc = toArc();
+    return arc.getPointCloud(segmentLength);
 }
 
 double RCircle::getAngleAt(double distance, RS::From from) const {

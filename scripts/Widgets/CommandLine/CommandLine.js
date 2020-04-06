@@ -69,6 +69,19 @@ CommandLine.init = function(basePath) {
 
     var e;
     var formWidget = WidgetFactory.createWidget(basePath, "CommandLine.ui");
+    var frame = formWidget.findChild("Frame");
+
+    var p = frame.palette;
+    if (!RSettings.hasDarkGuiBackground()) {
+        // white background of command line label:
+        p.setColor(QPalette.Active, QPalette.Window, new QColor(Qt.white));
+    }
+    else {
+        p.setColor(QPalette.Active, QPalette.Window, new QColor("#1e1e1e"));
+    }
+    frame.palette = p;
+    frame.autoFillBackground = true;
+
     var teHistory = formWidget.findChild("History");
     var leCommand = formWidget.findChild("CommandEdit");
     WidgetFactory.initLineEditInfoTools(leCommand);
@@ -464,6 +477,18 @@ CommandLine.init = function(basePath) {
         break;
     case "linux":
         system = "Linux";
+        break;
+    case "freebsd":
+        system = "FreeBSD";
+        break;
+    case "netbsd":
+        system = "NetBSD";
+        break;
+    case "openbsd":
+        system = "OpenBSD";
+        break;
+    case "solaris":
+        system = "Solaris";
         break;
     }
     EAction.handleUserMessage(

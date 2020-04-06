@@ -8,15 +8,19 @@
 #include "RVersion.h"
 
 bool RScriptsPlugin::init() {
+#ifdef QT_DEBUG
     qDebug() << "RScriptsPlugin::init";
-
-    RSettings::loadTranslations("scripts", QStringList() << ":ts");
+#endif
 
     return true;
 }
 
 void RScriptsPlugin::initScriptExtensions(QScriptEngine& engine) {
     Q_UNUSED(engine)
+}
+
+void RScriptsPlugin::initTranslations() {
+    RSettings::loadTranslations("scripts", QStringList() << ":ts");
 }
 
 RPluginInfo RScriptsPlugin::getPluginInfo() {

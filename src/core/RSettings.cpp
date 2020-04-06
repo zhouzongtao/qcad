@@ -29,6 +29,7 @@
 #include <QTranslator>
 
 #if QT_VERSION >= 0x050000
+#  include <QWindow>
 #  include <QStandardPaths>
 #else
 #  include <QDesktopServices>
@@ -38,6 +39,10 @@
 #include "RMath.h"
 #include "RSettings.h"
 #include "RVersion.h"
+
+#ifdef Q_OS_MAC
+#include "detectmacdarkmode.h"
+#endif
 
 bool RSettings::noWrite = false;
 QVariantMap RSettings::cache;
@@ -55,6 +60,7 @@ RColor* RSettings::startReferencePointColor = NULL;
 RColor* RSettings::endReferencePointColor = NULL;
 RColor* RSettings::secondaryReferencePointColor = NULL;
 RColor* RSettings::tertiaryReferencePointColor = NULL;
+int RSettings::darkMode = -1;
 int RSettings::darkGuiBackground = -1;
 int RSettings::snapRange = -1;
 int RSettings::pickRange = -1;
@@ -84,6 +90,7 @@ int RSettings::ignoreBlockReferencePoint = -1;
 int RSettings::ignoreAllReferencePoints = -1;
 int RSettings::referencePointSize = -1;
 int RSettings::referencePointShape = -1;
+int RSettings::propertyEditorShowOnRequest = -1;
 QString RSettings::polarCoordinateSeparator = QString::null;
 QString RSettings::cartesianCoordinateSeparator = QString::null;
 QString RSettings::relativeCoordinatePrefix = QString::null;
@@ -124,7 +131,17 @@ QString RSettings::getAppId() {
  * \return Device pixel ratio of the display. Usually 1 or 2 (for retina/high res displays).
  */
 double RSettings::getDevicePixelRatio() {
+    // DPR can be overridden in settings:
+    int dpr = RSettings::getIntValue("Appearance/DevicePixelRatio", 0);
+    if (dpr>0) {
+        return dpr;
+    }
+
 #if QT_VERSION >= 0x050000
+    QWindow* window = QGuiApplication::focusWindow();
+    if (window!=NULL) {
+        return window->devicePixelRatio();
+    }
     return qApp->devicePixelRatio();
 #else
     return 1.0;
@@ -939,6 +956,16 @@ int RSettings::getReferencePointShape() {
 }
 
 /**
+ * \return True to show slow properties availabe on request.
+ */
+bool RSettings::getPropertyEditorShowOnRequest() {
+    if (propertyEditorShowOnRequest==-1) {
+        propertyEditorShowOnRequest = getBoolValue("PropertyEditor/ShowOnRequest", false);
+    }
+    return propertyEditorShowOnRequest;
+}
+
+/**
  * \return Polar coordinate separator (<).
  */
 QString RSettings::getPolarCoordinateSeparator() {
@@ -968,24 +995,47 @@ QString RSettings::getRelativeCoordinatePrefix() {
     return relativeCoordinatePrefix;
 }
 
+/**
+ * \return True for macOS dark mode only.
+ */
+bool RSettings::isDarkMode() {
+    if (darkMode==-1) {
+#ifdef Q_OS_MAC
+        darkMode = (isMacDarkMode() ? 1 : 0);
+#else
+        darkMode = 0;
+#endif
+    }
+    return darkMode==1;
+}
+
 bool RSettings::hasDarkGuiBackground() {
     if (darkGuiBackground==-1) {
-//        // find out what color is used for QFrames (this might originate from a CSS stylesheet):
-//        QFrame* w = new QFrame();
-//        w->resize(1,1);
-//#if QT_VERSION >= 0x050000
-//        QPixmap pixmap = w->grab(QRect(0, 0, 1, 1));
-//#else
-//        QPixmap pixmap = QPixmap::grabWidget(w, QRect(0, 0, 1, 1));
-//#endif
-//        delete w;
-//        QImage img = pixmap.toImage();
-//        darkGuiBackground = QColor(img.pixel(0,0)).value()<128;
+        // detect dark QCAD theme:
         if (qApp->styleSheet().contains("IconPostfix:inverse", Qt::CaseInsensitive)) {
             darkGuiBackground = 1;
         }
         else {
+#ifdef Q_OS_MAC
+            // detect macOS dark mode:
+            if (isMacDarkMode()) {
+                darkGuiBackground = 1;
+            }
+            else {
+                darkGuiBackground = 0;
+            }
+            // TODO: support Windows Dark Theme:
+//#elif Q_OS_WINDOWS
+//            QSettings settings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",QSettings::NativeFormat);
+//            if (settings.value("AppsUseLightTheme")==0){
+//                darkGuiBackground = 1;
+//            }
+//            else {
+//                darkGuiBackground = 0;
+//            }
+#else
             darkGuiBackground = 0;
+#endif
         }
     }
     return darkGuiBackground==1;
@@ -1128,38 +1178,41 @@ QString RSettings::getOSVersion() {
     case QSysInfo::MV_10_2:
         return "Mac OS X 10.2 (Unsupported)";
     case QSysInfo::MV_10_3:
-        return "Mac OS X 10.3";
+        return "Mac OS X 10.3 (Panther)";
     case QSysInfo::MV_10_4:
-        return "Mac OS X 10.4";
+        return "Mac OS X 10.4 (Tiger)";
     case QSysInfo::MV_10_5:
-        return "Mac OS X 10.5";
+        return "Mac OS X 10.5 (Leopard)";
     case QSysInfo::MV_10_6:
-        return "Mac OS X 10.6";
+        return "Mac OS X 10.6 (Snow Leopard)";
     case QSysInfo::MV_10_7:
-        return "Mac OS X 10.7";
+        return "Mac OS X 10.7 (Lion)";
     case QSysInfo::MV_10_8:
-        return "Mac OS X 10.8";
+        return "Mac OS X 10.8 (Mountain Lion)";
     // QSysInfo::MV_10_9:
     case 0x000B:
-        return "Mac OS X 10.9";
+        return "Mac OS X 10.9 (Mavericks)";
     // QSysInfo::MV_10_10:
     case 0x000C:
-        return "Mac OS X 10.10";
+        return "Mac OS X 10.10 (Yosemite)";
     // QSysInfo::MV_10_11:
     case 0x000D:
-        return "Mac OS X 10.11";
+        return "Mac OS X 10.11 (El Capitan)";
     // QSysInfo::MV_10_12:
     case 0x000E:
-        return "macOS 10.12";
+        return "macOS 10.12 (Sierra)";
     // QSysInfo::MV_10_13:
     case 0x000F:
-        return "macOS 10.13";
+        return "macOS 10.13 (High Sierra)";
     // QSysInfo::MV_10_14:
     case 0x0010:
-        return "macOS 10.14";
+        return "macOS 10.14 (Mojave)";
+    // QSysInfo::MV_10_15:
+    case 0x0011:
+        return "macOS 10.15 (Catalina)";
     default:
     case QSysInfo::MV_Unknown:
-        return "macOS > 10.14 (Unsupported)";
+        return "macOS > 10.15 (Unsupported)";
     }
 #else
     return "Unknown";
@@ -1417,6 +1470,20 @@ RColor RSettings::getColorValue(const QString& key, const RColor& defaultValue) 
     QVariant ret = getValue(key, defaultValue);
     if (ret.canConvert<RColor>()) {
         return ret.value<RColor>();
+    }
+#if QT_VERSION >= 0x050000
+    else if (ret.canConvert(QMetaType::QString)) {
+#else
+    else if (ret.canConvert(QVariant::String)) {
+#endif
+        return RColor(ret.toString());
+    }
+#if QT_VERSION >= 0x050000
+    else if (ret.canConvert(QMetaType::QColor)) {
+#else
+    else if (ret.canConvert(QVariant::Color)) {
+#endif
+        return RColor(ret.value<QColor>());
     }
     else {
         return defaultValue;

@@ -163,6 +163,10 @@
         
     
       RColor getColor(
+                const RColor & unresolvedColor
+            );
+        
+      RColor getColor(
                 bool resolve
             );
         
@@ -507,6 +511,46 @@
             );
         
     
+      void exportTransform(
+                const QTransform & t
+            );
+        
+    
+      void exportEndTransform(
+                
+            );
+        
+    
+      void exportTranslation(
+                const RVector & offset
+            );
+        
+    
+      void exportEndTranslation(
+                
+            );
+        
+    
+      void exportRotation(
+                double angle
+            );
+        
+    
+      void exportEndRotation(
+                
+            );
+        
+    
+      void exportScale(
+                const RVector & factors
+            );
+        
+    
+      void exportEndScale(
+                
+            );
+        
+    
       void exportThickPolyline(
                 const RPolyline & polyline
             );
@@ -603,6 +647,11 @@
         
     
       double getPixelSizeHint(
+                
+            );
+        
+    
+      double getCurrentPixelSizeHint(
                 
             );
         

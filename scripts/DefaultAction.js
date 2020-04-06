@@ -80,6 +80,7 @@ DefaultAction.prototype.setState = function(state) {
         this.setArrowCursor();
     }
 
+    var tr;
     switch (this.state) {
     case DefaultAction.State.Neutral:
         this.d1Model = RVector.invalid;
@@ -99,21 +100,23 @@ DefaultAction.prototype.setState = function(state) {
         this.d2Screen = RVector.invalid;
         break;
     case DefaultAction.State.SettingCorner2:
-        this.setLeftMouseTip(qsTr("Set second corner"));
+        tr = qsTr("Second corner");
+        this.setLeftMouseTip(tr);
+        this.setCommandPrompt(tr);
         this.setRightMouseTip("");
         break;
     case DefaultAction.State.MovingReference:
     case DefaultAction.State.SettingReference:
-        this.setLeftMouseTip(
-                qsTr("Specify target point of reference point")
-        );
+        tr = qsTr("Target point of reference point");
+        this.setLeftMouseTip(tr);
+        this.setCommandPrompt(tr);
         this.setRightMouseTip("");
         break;
     case DefaultAction.State.MovingEntity:
     case DefaultAction.State.SettingEntity:
-        this.setLeftMouseTip(
-                qsTr("Specify target point of selection")
-        );
+        tr = qsTr("Target point of selection");
+        this.setLeftMouseTip(tr);
+        this.setCommandPrompt(tr);
         this.setRightMouseTip("");
         break;
     case DefaultAction.State.MovingEntityInBlock:
@@ -431,7 +434,11 @@ DefaultAction.prototype.mousePressEvent = function(event) {
 };
 
 DefaultAction.prototype.mouseDoubleClickEvent = function(event) {
-    if (event.button() == Qt.LeftButton && this.state===DefaultAction.State.Neutral) {
+    if (event.button() == Qt.LeftButton && (this.state===DefaultAction.State.Neutral || this.state===DefaultAction.State.Dragging)) {
+        if (this.state===DefaultAction.State.Dragging) {
+            // cancel dragging (double-click):
+            this.setState(DefaultAction.State.Neutral);
+        }
         var view = event.getGraphicsView();
         var range = view.mapDistanceFromView(this.pickRangePixels);
         var strictRange = view.mapDistanceFromView(10);
@@ -696,7 +703,8 @@ DefaultAction.prototype.entityDoubleClicked = function(entityId, event) {
 
         if (RSettings.getBoolValue("GraphicsView/DoubleClickSelectContour", true)===true) {
             include("scripts/Select/SelectContour/SelectContour.js");
-            var matchingEntityIds = SelectContour.getConnectedEntities(this.document, entityId, 0.001);
+            var tol = RSettings.getDoubleValue("GraphicsView/DoubleClickSelectContourTolerance", 0.001);
+            var matchingEntityIds = SelectContour.getConnectedEntities(this.document, entityId, tol);
             var add = isShiftPressed(event);
             if (entity.isSelected()) {
                 this.di.selectEntities(matchingEntityIds, add);

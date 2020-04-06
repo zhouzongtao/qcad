@@ -39,6 +39,7 @@ RMathLineEdit::RMathLineEdit(QWidget* parent) :
     noResultInToolTip(false) {
 
     oriPalette = palette();
+
     slotTextChanged(text());
     originalToolTip = QString();
     QLineEdit::setToolTip("");
@@ -83,6 +84,7 @@ void RMathLineEdit::slotTextChanged(const QString& text) {
         }
 
         if (doc!=NULL) {
+            // this calls RMath::eval, so it's OK to call RMath::hasError after:
             value = doc->eval(text);
         }
         else {
@@ -113,6 +115,8 @@ void RMathLineEdit::slotTextChanged(const QString& text) {
         setTextColor(hasError);
     }
     else {
+        // update text color of line edit / math line combo:
+        setTextColor(false);
         setPalette(oriPalette);
     }
 
@@ -239,12 +243,7 @@ QString RMathLineEdit::getError() {
 void RMathLineEdit::clearError() {
     error = "";
     QPalette p = palette();
-//    if (RSettings::hasDarkGuiBackground()) {
-//        p.setColor(QPalette::Text, QColor(Qt::white));
-//    }
-//    else {
-        p.setColor(QPalette::Text, QColor(Qt::black));
-//    }
+    p.setColor(QPalette::Active, QPalette::Text, getNormalTextColor());
     setPalette(p);
 }
 
@@ -256,9 +255,9 @@ void RMathLineEdit::setToolTip(const QString& toolTip) {
     }
 
     QString textCol = palette().toolTipText().color().name();
-//    if (RSettings::hasDarkGuiBackground()) {
-//        textCol = "white";
-//    }
+    if (RSettings::isDarkMode()) {
+        textCol = "white";
+    }
 
     QLineEdit::setToolTip(
         QString(
@@ -276,9 +275,13 @@ void RMathLineEdit::setToolTip(const QString& toolTip) {
     );
 }
 
+QColor RMathLineEdit::getNormalTextColor() const {
+    return oriPalette.color(QPalette::Normal, QPalette::WindowText);
+}
+
 void RMathLineEdit::setTextColor(bool error) {
     QPalette p = palette();
-    p.setColor(QPalette::Text, QColor(error ? Qt::red : Qt::black));
+    p.setColor(QPalette::Active, QPalette::Text, QColor(error ? Qt::red : getNormalTextColor()));
     setPalette(p);
 
     QWidget* parent = parentWidget();

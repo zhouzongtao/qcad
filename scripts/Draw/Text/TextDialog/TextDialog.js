@@ -128,6 +128,13 @@ TextDialog.prototype.show =  function(textDataIn) {
     this.sourceEdit = this.dialog.findChild("Source");
     this.tabWidget = this.dialog.findChild("TabWidget");
 
+    // brighter background of text area in dark mode:
+    if (RSettings.hasDarkGuiBackground()) {
+        var p = this.textEdit.palette;
+        p.setColor(QPalette.Active, QPalette.Base, new QColor(Qt.gray));
+        this.textEdit.palette = p;
+    }
+
     // main font combo box:
     var comboMainFont = this.dialog.findChild("MainFont");
     var comboFont = this.dialog.findChild("Font");
@@ -927,11 +934,13 @@ TextDialog.prototype.fontChanged = function(font) {
  * Called when user changes the current color or the color under the cursor changed.
  */
 TextDialog.prototype.colorChanged = function(c) {
-    // make sure that very bright text is readable:
-    if (c.lightness()>240) {
-        var p = this.textEdit.palette;
-        p.setColor(QPalette.Active, QPalette.Base, new QColor(Qt.lightGray));
-        this.textEdit.palette = p;
+    if (!RSettings.hasDarkGuiBackground()) {
+        // make sure that very bright text is readable:
+        if (c.lightness()>240) {
+            var p = this.textEdit.palette;
+            p.setColor(QPalette.Active, QPalette.Base, new QColor(Qt.lightGray));
+            this.textEdit.palette = p;
+        }
     }
 
     var pix = new QPixmap(16, 16);
@@ -991,6 +1000,7 @@ TextDialog.prototype.updateSource = function(force) {
         textDocument.defaultFont = this.getTextDocument().defaultFont;
         var cbSimpleText = this.dialog.findChild("SimpleText");
         var source = RTextBasedData.toEscapedText(textDocument, this.initialColor, this.fontHeightFactor, cbSimpleText.checked);
+        //qDebug("source: \n\n", source, "\n\n");
         this.sourceEdit.setPlainText(source);
         this.getTextDocument().modified = false;
     }

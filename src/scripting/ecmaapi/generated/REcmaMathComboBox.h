@@ -47,30 +47,17 @@
     
 
     // public methods:
-    static  QScriptValue toString
+    static  QScriptValue
+        slotTextChanged
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
+        slotValueChanged
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue toString
     (QScriptContext *context, QScriptEngine *engine)
     ;static  QScriptValue destroy(QScriptContext *context, QScriptEngine *engine)
     ;static RMathComboBox* getSelf(const QString& fName, QScriptContext* context)
     ;static RMathComboBox* getSelfShell(const QString& fName, QScriptContext* context)
-    ;static  void fromScriptValue(const QScriptValue& value,
-        RMathComboBox*
-        &out) {
-            QObject* o = value.toQObject();
-            out = qobject_cast<
-            RMathComboBox*>(o);
-        }
-    static  QScriptValue toScriptValue(QScriptEngine *engine,
-        RMathComboBox*
-        const &in){
-            QScriptValue s = engine->newQObject(in, QScriptEngine::QtOwnership,
-            QScriptEngine::PreferExistingWrapperObject);
-            /*
-            if(s.isNull()){
-               REcmaHelper::throwError("This object is null.", engine->currentContext());
-            }
-            */
-            return s;
-        }
-    };
+    ;};
     #endif
     

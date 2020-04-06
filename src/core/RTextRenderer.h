@@ -236,6 +236,9 @@ public:
     static QString rxXAlignmentLeft;
     static QString rxXAlignmentCenter;
     static QString rxXAlignmentRight;
+    static QString rxXSpaceMText;
+    static QString rxTabMM;
+    static QString rxTabIN;
     static QString rxParagraphFeed;
     static QString rxXFeed;
     static QString rxHeightChange;

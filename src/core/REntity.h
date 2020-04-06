@@ -42,6 +42,7 @@ class RDocument;
 class REntity;
 class RBlockReferenceEntity;
 class RExporter;
+class RViewportData;
 
 #ifndef RDEFAULT_QSET_INT
 #define RDEFAULT_QSET_INT QSet<int>()
@@ -116,6 +117,7 @@ public:
 
     static bool isComplex(const RS::EntityType type);
     static bool isDimension(const RS::EntityType type);
+    static bool isTextBased(const RS::EntityType type);
 
     /**
      * \return Reference to the data object of the entity.
@@ -278,9 +280,6 @@ public:
      * \copydoc REntityData::setLinetypeScale
      */
     void setLinetypeScale(double linetypeScale) {
-        if (linetypeScale<0.0) {
-            qDebug() << "setLinetypeScale to -1";
-        }
         getData().setLinetypeScale(linetypeScale);
     }
 
@@ -324,6 +323,7 @@ public:
         return getData().getColor();
     }
 
+    RColor getColor(const RColor& unresolvedColor, const QStack<REntity*>& blockRefStack);
     RColor getColor(bool resolve, const QStack<REntity*>& blockRefStack);
 
     RColor getDisplayColor() {
@@ -541,23 +541,29 @@ public:
     /**
      * \copydoc REntityData::scale
      */
-    virtual bool scale(const RVector& scaleFactors,
-        const RVector& center = RDEFAULT_RVECTOR) {
-
+    virtual bool scale(const RVector& scaleFactors, const RVector& center = RDEFAULT_RVECTOR) {
         return getData().scale(scaleFactors, center);
     }
 
     /**
+     * \copydoc REntityData::scaleNonUniform
+     */
+    virtual QSharedPointer<REntity> scaleNonUniform(const RVector& scaleFactors, const RVector& center = RDEFAULT_RVECTOR);
+
+    /**
      * \copydoc REntityData::scale
      */
-    virtual bool scale(double scaleFactor,
-        const RVector& center = RDEFAULT_RVECTOR) {
-
+    virtual bool scale(double scaleFactor, const RVector& center = RDEFAULT_RVECTOR) {
         return getData().scale(scaleFactor, center);
     }
 
     virtual void scaleVisualProperties(double scaleFactor) {
         getData().scaleVisualProperties(scaleFactor);
+    }
+
+    virtual void setViewportContext(const RViewportData&) {
+        // MSVC does not compile this:
+        //Q_UNUSED(vp);
     }
 
     /**
@@ -634,7 +640,7 @@ public:
     virtual bool setProperty(RPropertyTypeId propertyTypeId,
             const QVariant& value, RTransaction* transaction=NULL);
 
-    virtual bool isVisible() const;
+    virtual bool isVisible(RBlock::Id blockId = RBlock::INVALID_ID) const;
     virtual bool isEditable(bool allowInvisible = false) const;
 
     virtual int getComplexity() const {

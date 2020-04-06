@@ -147,7 +147,13 @@
         getCenterPoints
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
+        getArcReferencePoints
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
         getPointOnShape
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
+        getPointCloud
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
         getPointsWithDistanceToEnd
@@ -343,6 +349,12 @@
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
         rayToLine
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
+        scaleArc
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
+        ellipseToArcCircleEllipse
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
         getErrorCode

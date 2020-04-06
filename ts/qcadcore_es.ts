@@ -515,8 +515,8 @@ Introduzca ángulo en línea de cota:</translatorcomment>
         <translation>Atributos</translation>
     </message>
     <message>
-        <location filename="../src/core/REntity.cpp" line="+87"/>
-        <location filename="../src/core/RObject.cpp" line="+67"/>
+        <location filename="../src/core/REntity.cpp" line="+91"/>
+        <location filename="../src/core/RObject.cpp" line="+68"/>
         <source>Type</source>
         <translatorcomment>--exact match--
 --file: es.po--
@@ -560,7 +560,7 @@ Tipo de línea</translatorcomment>
         <location filename="../src/core/RLayer.cpp" line="+1"/>
         <source>Lineweight</source>
         <translatorcomment>--google--</translatorcomment>
-        <translation>Grosor de línea</translation>
+        <translation>Grosor de la línea</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -635,6 +635,11 @@ Colores
         <location line="+1"/>
         <source>Selected</source>
         <translation>Seleccionados</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Invisible</source>
+        <translation>Invisible</translation>
     </message>
     <message>
         <location filename="../src/core/REntity.cpp" line="+2"/>
@@ -850,7 +855,7 @@ Colores
         <translation type="vanished">Márgenes de trazado</translation>
     </message>
     <message>
-        <location filename="../src/core/RBlockReferenceData.cpp" line="+651"/>
+        <location filename="../src/core/RBlockReferenceData.cpp" line="+852"/>
         <source>Circular (recursive) block referencing detected:</source>
         <translation>Se detectó una referencia de bloque circular (recursiva):</translation>
     </message>
@@ -897,7 +902,7 @@ Colores
     </message>
     <message>
         <source>Lineweight</source>
-        <translation type="vanished">Grosor de línea</translation>
+        <translation type="vanished">Grosor de la línea</translation>
     </message>
 </context>
 <context>
@@ -1060,7 +1065,7 @@ Borde
         <translation type="vanished">2 rayas 1 punto (grande)</translation>
     </message>
     <message>
-        <location filename="../src/core/RLinetype.cpp" line="+48"/>
+        <location filename="../src/core/RLinetype.cpp" line="+52"/>
         <source>Name</source>
         <translation>Nombre</translation>
     </message>
@@ -1083,7 +1088,7 @@ Borde
 <context>
     <name>RLinetypePattern</name>
     <message>
-        <location filename="../src/core/RLinetypePattern.cpp" line="+856"/>
+        <location filename="../src/core/RLinetypePattern.cpp" line="+869"/>
         <source>By Layer</source>
         <translation>Por Capa</translation>
     </message>

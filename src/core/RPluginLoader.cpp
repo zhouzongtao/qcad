@@ -73,6 +73,16 @@ QStringList RPluginLoader::getPluginFiles() {
         pluginFiles.append(pluginsDir.absoluteFilePath(fileName));
     }
 
+    // make sure plugins which depend on other plugins are loaded last:
+    pluginFiles.sort();
+    for (int i=0; i<pluginFiles.length(); i++) {
+        if (pluginFiles[i].contains("nest")) {
+            QString pf = pluginFiles.takeAt(i);
+            pluginFiles.append(pf);
+            break;
+        }
+    }
+
     return pluginFiles;
 }
 
@@ -80,6 +90,8 @@ QStringList RPluginLoader::getPluginFiles() {
  * Tries to loads all QCAD plugins located in ./plugins.
  */
 void RPluginLoader::loadPlugins(bool init) {
+    QString theme = RSettings::getStringValue("Theme/ThemeName", "");
+
     pluginFiles.clear();
     pluginsInfo.clear();
 
@@ -106,6 +118,18 @@ void RPluginLoader::loadPlugins(bool init) {
 //        if (disabledPluginsList.contains(fn, Qt::CaseInsensitive)) {
 //            continue;
 //        }
+
+        QString baseName = QFileInfo(fileName).baseName();
+        baseName = baseName.replace("_debug", "");
+        baseName = baseName.replace("lib", "");
+        if (baseName.startsWith("qcad") && baseName.endsWith("style")) {
+            // plugin is a theme / style:
+            QString styleName = baseName.mid(4, baseName.length()-4-5);
+            if (theme.toLower()!=styleName.toLower()) {
+                // only load style plugin if name matched theme:
+                continue;
+            }
+        }
         QPluginLoader loader(fileName);
         QObject* plugin = loader.instance();
         loadPlugin(plugin, init, fileName, loader.errorString());
@@ -216,6 +240,27 @@ void RPluginLoader::initScriptExtensions(QObject* plugin, QScriptEngine& engine)
     RPluginInterface* p = qobject_cast<RPluginInterface*>(plugin);
     if (p) {
         p->initScriptExtensions(engine);
+    }
+}
+
+void RPluginLoader::initTranslations() {
+    foreach (QString fileName, getPluginFiles()) {
+        QPluginLoader loader(fileName);
+        QObject* plugin = loader.instance();
+        initTranslations(plugin);
+    }
+
+    QObjectList staticPlugins = QPluginLoader::staticInstances();
+    for (int i=0; i<staticPlugins.size(); i++) {
+        QObject* plugin = staticPlugins[i];
+        initTranslations(plugin);
+    }
+}
+
+void RPluginLoader::initTranslations(QObject* plugin) {
+    RPluginInterface* p = qobject_cast<RPluginInterface*>(plugin);
+    if (p) {
+        p->initTranslations();
     }
 }
 

@@ -78,8 +78,8 @@ public:
     const RStorage& getStorage() const;
     RSpatialIndex& getSpatialIndex();
     const RSpatialIndex& getSpatialIndex() const;
-    RSpatialIndex* getSpatialIndexForBlock(RBlock::Id blockId);
-    RSpatialIndex* getSpatialIndexForCurrentBlock();
+    RSpatialIndex* getSpatialIndexForBlock(RBlock::Id blockId) const;
+    RSpatialIndex* getSpatialIndexForCurrentBlock() const;
     RTransactionStack& getTransactionStack();
 
     void clear(bool beforeLoad=false);
@@ -123,9 +123,13 @@ public:
     QSet<REntity::Id> queryBlockReferences(RBlock::Id blockId) const;
     QSet<REntity::Id> queryAllBlockReferences() const;
 
-    QSet<REntity::Id> queryContainedEntities(const RBox& box);
+    QSet<REntity::Id> queryContainedEntities(const RBox& box) const;
 
-    QSet<REntity::Id> queryInfiniteEntities();
+    QSet<REntity::Id> queryInfiniteEntities() const;
+
+    QSet<REntity::Id> queryIntersectedEntitiesXYFast(const RBox& box);
+    QSet<REntity::Id> queryIntersectedShapesXYFast(const RBox& box, bool noInfiniteEntities = false);
+
     QSet<REntity::Id> queryIntersectedEntitiesXY(
             const RBox& box,
             bool checkBoundingBoxOnly=false,
@@ -133,7 +137,7 @@ public:
             RBlock::Id blockId = RBlock::INVALID_ID,
             const QList<RS::EntityType>& filter = RDEFAULT_QLIST_RS_ENTITYTYPE,
             bool selectedOnly = false
-    );
+    ) const;
 
     QMap<REntity::Id, QSet<int> > queryIntersectedShapesXY(
         const RBox& box,
@@ -142,13 +146,11 @@ public:
         RBlock::Id blockId = RBlock::INVALID_ID,
         const QList<RS::EntityType>& filter = RDEFAULT_QLIST_RS_ENTITYTYPE,
         bool selectedOnly = false
-    );
+    ) const;
 
-    QSet<REntity::Id> queryContainedEntitiesXY(
-        const RBox& box
-    );
+    QSet<REntity::Id> queryContainedEntitiesXY(const RBox& box) const;
 
-    QSet<REntity::Id> querySelectedEntities();
+    QSet<REntity::Id> querySelectedEntities() const;
 
     QSet<REntity::Id> queryConnectedEntities(REntity::Id entityId, double tolerance = RS::PointTolerance);
 
@@ -161,6 +163,7 @@ public:
     QSharedPointer<RObject> queryObjectByHandle(RObject::Handle objectHandle) const;
     QSharedPointer<REntity> queryEntity(REntity::Id entityId) const;
     QSharedPointer<REntity> queryEntityDirect(REntity::Id entityId) const;
+    QSharedPointer<REntity> queryVisibleEntityDirect(REntity::Id entityId) const;
     QSharedPointer<RUcs> queryUcs(RUcs::Id ucsId) const;
     QSharedPointer<RUcs> queryUcs(const QString& ucsName) const;
     QSharedPointer<RLayer> queryLayer(RLayer::Id layerId) const;
@@ -231,6 +234,8 @@ public:
     bool isBlockFrozen(RBlock::Id blockId) const;
     bool isLayoutBlock(RBlock::Id blockId) const;
     bool isEntityLayerFrozen(REntity::Id entityId) const;
+
+    bool isEntityVisible(const REntity& entity, RBlock::Id blockId = RBlock::INVALID_ID) const;
 
     bool isParentLayerSnappable(RLayer::Id layerId) const;
     bool isParentLayerSnappable(const RLayer& layer) const;
@@ -452,7 +457,7 @@ private:
     RSpatialIndex& spatialIndex;
     bool disableSpatialIndicesByBlock;
     // map of spatial indices (per block):
-    QMap<RBlock::Id, RSpatialIndex*> spatialIndicesByBlock;
+    mutable QMap<RBlock::Id, RSpatialIndex*> spatialIndicesByBlock;
     RTransactionStack transactionStack;
     //RBlock::Id modelSpaceBlockId;
     RLinetype::Id linetypeByLayerId;

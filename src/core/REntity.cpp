@@ -60,11 +60,8 @@ REntity::~REntity() {
 }
 
 bool REntity::isComplex(const RS::EntityType type) {
-    return (type==RS::EntityAttributeDefinition ||
-            type==RS::EntityAttribute ||
-            type==RS::EntityHatch ||
-            type==RS::EntityTextBased ||
-            type==RS::EntityText ||
+    return (type==RS::EntityHatch ||
+            isTextBased(type) ||
             isDimension(type));
 }
 
@@ -78,6 +75,13 @@ bool REntity::isDimension(const RS::EntityType type) {
             type==RS::EntityDimAngular2L ||
             type==RS::EntityDimAngular3P ||
             type==RS::EntityDimOrdinate);
+}
+
+bool REntity::isTextBased(const RS::EntityType type) {
+    return (type==RS::EntityAttributeDefinition ||
+            type==RS::EntityAttribute ||
+            type==RS::EntityTextBased ||
+            type==RS::EntityText);
 }
 
 void REntity::init() {
@@ -115,6 +119,18 @@ RLineweight::Lineweight REntity::getLineweight(bool resolve,
     }
 
     return getData().getLineweight(resolve, newBlockRefStack);
+}
+
+/**
+ * \copydoc REntityData::getColor
+ */
+RColor REntity::getColor(const RColor& unresolvedColor, const QStack<REntity*>& blockRefStack) {
+    QStack<REntity*> newBlockRefStack = blockRefStack;
+    if (!newBlockRefStack.isEmpty() && this==(REntity*)newBlockRefStack.top()) {
+        newBlockRefStack.pop();
+    }
+
+    return getData().getColor(unresolvedColor, newBlockRefStack);
 }
 
 /**
@@ -166,33 +182,10 @@ void REntity::copyAttributesFrom(const REntity* entity, bool copyBlockId) {
     }
 
     copyAttributesFrom(entity->getData(), copyBlockId);
-
-//    setLayerId(entity->getLayerId());
-//    if (copyBlockId) {
-//        setBlockId(entity->getBlockId());
-//    }
-//    setColor(entity->getColor());
-//    setLineweight(entity->getLineweight());
-//    setLinetypeId(entity->getLinetypeId());
-//    setLinetypeScale(entity->getLinetypeScale());
-//    setDrawOrder(entity->getDrawOrder());
 }
 
 void REntity::copyAttributesFrom(const REntityData& entityData, bool copyBlockId) {
-    if (getDocument()!=entityData.getDocument()) {
-        qWarning("REntity::copyAttributesFrom: source entity not from same document");
-        return;
-    }
-
-    setLayerId(entityData.getLayerId());
-    if (copyBlockId) {
-        setBlockId(entityData.getBlockId());
-    }
-    setColor(entityData.getColor());
-    setLineweight(entityData.getLineweight());
-    setLinetypeId(entityData.getLinetypeId());
-    setLinetypeScale(entityData.getLinetypeScale());
-    setDrawOrder(entityData.getDrawOrder());
+    getData().copyAttributesFrom(entityData, copyBlockId);
 }
 
 QList<RVector> REntity::getIntersectionPoints(
@@ -371,72 +364,21 @@ bool REntity::setProperty(RPropertyTypeId propertyTypeId, const QVariant& value,
 }
 
 /**
- * \return true if this entity is visible (i.e. is not on a frozen or hidden layer
+ * \return true if this entity is visible (i.e. is on current or given block, is not on a frozen or hidden layer
  * or in a frozen block).
  */
-bool REntity::isVisible() const {
+bool REntity::isVisible(RBlock::Id blockId) const {
     const RDocument* doc = getDocument();
     if (doc==NULL) {
         return true;
     }
 
-    RLayer::Id layerId = getLayerId();
-    bool isLayer0 = (layerId==doc->getLayer0Id());
-    bool ignoreLayerVisibility = false;
-
-    QSharedPointer<RLayer> layer = doc->queryLayerDirect(layerId);
-
-//    qDebug() << "entity: ";
-//    dump();
-//    qDebug() << "layer: " << layer->getName();
-//    qDebug() << "model space: " << doc->getModelSpaceBlockId();
-//    qDebug() << "block ID: " << getBlockId();
-//    qDebug() << "layer 0 compat: " << RSettings::isLayer0CompatibilityOn();
-
-    if (isLayer0 &&
-        RSettings::isLayer0CompatibilityOn() &&
-        doc->getCurrentBlockId()!=getBlockId()) {
-
-        // entity is on layer 0 and not in model space block:
-        // if layer 0 compatibility is on, the visibility of layer 0
-        // does not affect the visibility of the entity:
-        ignoreLayerVisibility = true;
+    if (isInvisible()) {
+        // entity is invisible (part of a dynamic block and turned off):
+        return false;
     }
 
-    // check if layer is frozen:
-    if (doc->isLayerFrozen(*layer) && !ignoreLayerVisibility) {
-        if (getType()!=RS::EntityViewport) {
-            return false;
-        }
-    }
-
-    // check if layer is off and this is not a block reference:
-    // block references on layer X remain visible if X is off but not frozen:
-    if (doc->isLayerOff(*layer) && !ignoreLayerVisibility) {
-        if (getType()!=RS::EntityBlockRef && getType()!=RS::EntityViewport) {
-            return false;
-        }
-    }
-
-    // if entity is on layer 0 and layer of current rendering context block reference
-    // is off, entity is off:
-    // -> this is implemented in RBlockReference::exportEntity
-
-    // check if block is frozen:
-    if (getType()==RS::EntityBlockRef) {
-        const RBlockReferenceEntity* blockRef = dynamic_cast<const RBlockReferenceEntity*>(this);
-        if (blockRef!=NULL) {
-            RBlock::Id blockId = blockRef->getReferencedBlockId();
-            if (blockId!=RBlock::INVALID_ID) {
-                QSharedPointer<RBlock> block = doc->queryBlockDirect(blockId);
-                if (!block.isNull() && block->isFrozen()) {
-                    return false;
-                }
-            }
-        }
-    }
-
-    return true;
+    return doc->isEntityVisible(*this, blockId);
 }
 
 /**
@@ -465,6 +407,16 @@ bool REntity::isEditable(bool allowInvisible) const {
  */
 void REntity::setSelected(bool on) {
     getData().setSelected(on);
+}
+
+QSharedPointer<REntity> REntity::scaleNonUniform(const RVector& scaleFactors, const RVector& center) {
+    QSharedPointer<REntity> cl(clone());
+    RShape* s = cl->castToShape();
+    if (s==NULL) {
+        return QSharedPointer<REntity>();
+    }
+    s->scale(scaleFactors, center);
+    return cl;
 }
 
 /**

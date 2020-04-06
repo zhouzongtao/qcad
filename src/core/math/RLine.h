@@ -70,6 +70,7 @@ public:
     virtual QList<RVector> getCenterPoints() const;
     virtual QList<RVector> getPointsWithDistanceToEnd(
         double distance, int from = RS::FromAny) const;
+    virtual QList<RVector> getPointCloud(double segmentLength) const;
 
     virtual double getAngleAt(double distance, RS::From from = RS::FromStart) const;
 
@@ -88,6 +89,8 @@ public:
 
     void setLength(double l, bool fromStart = true);
     void setAngle(double a);
+
+    bool isParallel(const RLine& line) const;
 
     bool isVertical(double tolerance = RS::PointTolerance) const;
     bool isHorizontal(double tolerance = RS::PointTolerance) const;

@@ -48,7 +48,9 @@ CreateBlock.prototype.setState = function(state) {
     this.setCrosshairCursor();
     this.getDocumentInterface().setClickMode(RAction.PickCoordinate);
 
-    this.setLeftMouseTip(qsTr("Reference Point"));
+    var trRefPoint = qsTr("Reference Point");
+    this.setCommandPrompt(trRefPoint);
+    this.setLeftMouseTip(trRefPoint);
     this.setRightMouseTip(EAction.trCancel);
 
     EAction.showSnapTools();
@@ -131,12 +133,12 @@ CreateBlock.createBlock = function(di, block, referencePoint, entityIds, title, 
     // list of attribute entities:
     var attributeEntities = [];
 
+    // deselect original entities:
+    di.deselectEntities(entityIds);
+
     // add selection to new block:
     for (i=0; i<entityIds.length; i++) {
         var id = entityIds[i];
-
-        // deselect original entity:
-        di.deselectEntity(id);
 
         entity = doc.queryEntity(id);
         if (isNull(entity)) {

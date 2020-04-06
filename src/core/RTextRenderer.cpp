@@ -35,16 +35,19 @@ QChar RTextRenderer::chPlusMinus = QChar(0x00b1);
 //QChar RTextRenderer::chDiameter = QChar(0x2300);
 QChar RTextRenderer::chDiameter = QChar(0x00f8);
 
-QString RTextRenderer::rxLineFeed = "\\\\p(?:x?i(\\d*\\.?\\d+);)?";
+QString RTextRenderer::rxLineFeed = "\\\\p(?:x?i(\\d*\\.?\\d*);)?";
 QString RTextRenderer::rxAlignmentLeft = "\\\\pql;";
 QString RTextRenderer::rxAlignmentCenter = "\\\\pqc;";
 QString RTextRenderer::rxAlignmentRight = "\\\\pqr;";
 QString RTextRenderer::rxXAlignmentLeft = "\\\\pxql;";
 QString RTextRenderer::rxXAlignmentCenter = "\\\\pxqc;";
 QString RTextRenderer::rxXAlignmentRight = "\\\\pxqr;";
+QString RTextRenderer::rxXSpaceMText = "\\\\pxsm(\\d*\\.?\\d*),?[a-z]*;";
+QString RTextRenderer::rxTabMM = "\\\\pt(\\d*\\.?\\d*,?)*;";
+QString RTextRenderer::rxTabIN = "\\\\pxt(\\d*\\.?\\d*,?)*;";
 QString RTextRenderer::rxParagraphFeed = "\\\\P";
 QString RTextRenderer::rxXFeed = "\\\\X";
-QString RTextRenderer::rxHeightChange = "\\\\H(\\d*\\.?\\d+)(x?);";
+QString RTextRenderer::rxHeightChange = "\\\\H(\\d*\\.?\\d*)(x?);";
 QString RTextRenderer::rxUnderlineChange = "\\\\L|\\\\l";
 //QString RTextRenderer::rxRelativeHeightChange = "";
 QString RTextRenderer::rxStackedText = "\\\\S([^^]*)\\^([^;]*);";
@@ -59,17 +62,18 @@ QString RTextRenderer::rxUnderlineOn = "\\\\L";
 QString RTextRenderer::rxUnderlineOff = "\\\\l";
 QString RTextRenderer::rxStrikethroughOn = "\\\\K";
 QString RTextRenderer::rxStrikethroughOff = "\\\\k";
-QString RTextRenderer::rxWidthChange = "\\\\W(\\d*\\.?\\d+)x?;";
-QString RTextRenderer::rxObliqueAngleChange = "\\\\Q(\\d*\\.?\\d+);";
-QString RTextRenderer::rxTrackChange = "\\\\T(\\d*\\.?\\d+);";
+QString RTextRenderer::rxWidthChange = "\\\\W(\\d*\\.?\\d*)x?;";
+QString RTextRenderer::rxObliqueAngleChange = "\\\\Q(\\d*\\.?\\d*);";
+QString RTextRenderer::rxTrackChange = "\\\\T(\\d*\\.?\\d*);";
 QString RTextRenderer::rxAlignmentChange = "\\\\A(\\d+);";
-QString RTextRenderer::rxFontChangeCad = "(?:\\\\F([^|]*)\\|c(\\d+);|\\\\F([^|;]*);)";
+QString RTextRenderer::rxFontChangeCad = "(?:\\\\F([^|]*)\\|+c(\\d+);|\\\\F([^|;]*);)";
 //QString RTextRenderer::rxFontChangeTtf = "\\\\f([^|]*)\\|b(\\d+)\\|i(\\d+)\\|c(\\d+)\\|p(\\d+);";
 QString RTextRenderer::rxFontChangeTtf = "\\\\f([^|]*)"
-                                         "(?:\\|([bicp])(\\d+))?"
-                                         "(?:\\|([bicp])(\\d+))?"
-                                         "(?:\\|([bicp])(\\d+))?"
-                                         "(?:\\|([bicp])(\\d+))?"
+                                         "(?:\\|+([bicp])(\\d+))?"
+                                         "(?:\\|+([bicp])(\\d+))?"
+                                         "(?:\\|+([bicp])(\\d+))?"
+                                         "(?:\\|+([bicp])(\\d+))?"
+                                         "\\|*" // optional "|" at end, see FS#1882
                                          ";";
 QString RTextRenderer::rxBeginBlock = "\\{";
 QString RTextRenderer::rxEndBlock = "\\}";
@@ -98,6 +102,9 @@ QString RTextRenderer::rxAll = "("
     + RTextRenderer::rxXAlignmentLeft + "|"
     + RTextRenderer::rxXAlignmentCenter + "|"
     + RTextRenderer::rxXAlignmentRight + "|"
+    + RTextRenderer::rxXSpaceMText + "|"
+    + RTextRenderer::rxTabMM + "|"
+    + RTextRenderer::rxTabIN + "|"
     + RTextRenderer::rxParagraphFeed + "|"
     + RTextRenderer::rxXFeed + "|"
     + RTextRenderer::rxHeightChange + "|"
@@ -1499,7 +1506,10 @@ QList<RPainterPath> RTextRenderer::getPainterPathsForBlockTtf(
     layout->draw(&ppPainter, QPoint(0,0));
     ppPainter.end();
 
-    QColor currentColor = currentFormat.top().foreground().color();
+    QColor currentColor = Qt::white;
+    if (!currentFormat.isEmpty()) {
+        currentColor = currentFormat.top().foreground().color();
+    }
 
     // transform to exactly 1.0 height for an 'A',
     // reference point is bottom left (to make sure that texts of different
@@ -1561,9 +1571,13 @@ QList<RPainterPath> RTextRenderer::getPainterPathsForBlockCad(
         }
 
         // 20120309: resort to standard font (better than nothing):
-        font = RFontList::get("standard");
+        // 20191009: no substitution
+        font = RFontList::get("Standard", false);
         if (font==NULL) {
             qWarning() << "standard font not found";
+            // make sure layout and transforms are always added:
+            lineBlockTransforms.append(QTransform());
+            textLayouts.append(RTextLayout());
             return QList<RPainterPath>() << RPainterPath();
         }
     }

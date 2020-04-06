@@ -24,7 +24,8 @@
  * \brief This module contains ECMAScript implementations of various projection (isometric, orthographic) tools.
  */
 
-include("../Modify/Transform.js");
+include("scripts/Modify/Explode/Explode.js");
+include("scripts/Modify/Transform.js");
 include("scripts/ShapeAlgorithms.js");
 
 /**
@@ -44,6 +45,7 @@ function Projection(guiAction) {
     // segmented into line segments:
     this.segmentation = false;
     this.segmentLength = 1.0;
+    this.retainTexts = false;
 
     // force flat projection (for aux constructions):
     this.flat = false;
@@ -228,14 +230,52 @@ Projection.prototype.postTransform = function(entity) {
 /**
  * Callback function for Transform.getOperation. Generic for all projections.
  * \param k Ignored
+ * \param rec Recursive call (don't call preTransform to move / rotate)
  */
-Projection.prototype.transform = function(entity, k, op, preview, flags) {
-    var i;
+Projection.prototype.transform = function(entity, k, op, preview, flags, rec) {
+    if (isNull(rec)) {
+        rec = false;
+    }
 
-    this.preTransform(entity);
+    var i, shapes;
 
-    // shapes that represent this entity:
-    var shapes = entity.getShapes();
+    if (rec!==true) {
+        this.preTransform(entity);
+    }
+
+    if (this.retainTexts && isTextBasedEntity(entity)) {
+        // don't explode text, only project position:
+        var e = entity.clone();
+        e.setSelected(false);
+        var p = e.getAlignmentPoint();
+        //qDebug("p before:", p);
+        //qDebug("ap:", e.getAlignmentPoint());
+        this.project(p);
+        //qDebug("p after:", p);
+        //e.setPosition(p);
+        e.setAlignmentPoint(p);
+        flags = flags | RAddObjectsOperation.UseAttributes;
+        op.addObject(e, flags);
+        return;
+    }
+
+    // explode block reference to keep attributes (colors, etc.):
+    if (isBlockReferenceEntity(entity)) {
+        var explodedEntities = Explode.explodeEntity(entity);
+        for (i=0; i<explodedEntities.length; i++) {
+            var explodedEntity = explodedEntities[i];
+
+            if (isEntity(explodedEntity)) {
+                this.transform(explodedEntity, k, op, preview, flags, true);
+            }
+            else {
+                qWarning("shape in exploded block");
+            }
+        }
+        return;
+    }
+
+    shapes = entity.getShapes();
     this.addTransformedShapes(entity, shapes, op, preview, flags);
 
     // text data that is part of this entity (dimension label):
@@ -261,9 +301,51 @@ Projection.prototype.transform = function(entity, k, op, preview, flags) {
  * \param op RAddObjectsOperation Operation
  */
 Projection.prototype.addTransformedShapes = function(entity, shapes, op, preview, flags) {
-    for (var i=0; i<shapes.length; i++) {
-        var s = this.projectShape(shapes[i].data(), preview);
-        for (var n=0; n<s.length; n++) {
+    var i, s, n;
+
+    if (isHatchEntity(entity) && entity.isSolid()) {
+        var hd = entity.getData();
+        hd.clearBoundary();
+        hd.newLoop();
+
+        for (i=0; i<shapes.length; i++) {
+            s = this.projectShape(shapes[i].data(), preview);
+            for (n=0; n<s.length; n++) {
+                if (isNull(s[n])) {
+                    debugger;
+                }
+
+                if (isPolylineShape(s[n])) {
+                    s[n].simplify(0.001);
+                }
+
+                hd.addBoundary(s[n], true);
+            }
+        }
+
+        var e = entity.clone();
+        e.setData(hd);
+        e.setSelected(false);
+
+//        for (i=0; i<hd.getLoopCount(); i++) {
+//            s = hd.getLoopBoundary(i);
+//            qDebug("hatch boundary:", s);
+//        }
+
+        //e.getData().getDocument().getStorage().setObjectId(e, RObject.INVALID_ID);
+        flags = flags | RAddObjectsOperation.UseAttributes | RAddObjectsOperation.ForceNew;
+        //flags = flags | RAddObjectsOperation.UseAttributes;
+        op.addObject(e, flags);
+        return;
+    }
+
+    for (i=0; i<shapes.length; i++) {
+        if (isNull(shapes[i])) {
+            continue;
+        }
+
+        s = this.projectShape(shapes[i].data(), preview);
+        for (n=0; n<s.length; n++) {
             if (isNull(s[n])) {
                 debugger;
             }
@@ -302,7 +384,7 @@ Projection.prototype.trimShape = function(shape) {
  * chosen reference point.
  */
 Projection.prototype.project = function(p) {
-    return p;
+    return;
 }
 
 /**
@@ -319,11 +401,14 @@ Projection.prototype.isFlip = function() {
  *
  * \return Array of new projected shapes.
  */
-Projection.prototype.projectShape = function(shape, preview, trim) {
+Projection.prototype.projectShape = function(shape, preview, trim, rec) {
     var p, p2, i, k, s, ret;
 
     if (isNull(trim)) {
         trim = true;
+    }
+    if (isNull(rec)) {
+        rec = false;
     }
 
     // trim shape and project resulting segments:
@@ -354,12 +439,19 @@ Projection.prototype.projectShape = function(shape, preview, trim) {
             if (!preview && this.segmentLength>RS.PointTolerance) {
                 numSegments = Math.ceil(l/this.segmentLength);
             }
+            if (numSegments>1000) {
+                // avoid huge number of segments / crash:
+                numSegments = 1000;
+            }
 
             var polyline = ShapeAlgorithms.lineOrArcToPolyline(shape, numSegments);
-            var projectedPl = this.projectShape(polyline, preview, trim)[0];
-            if (!isNull(projectedPl)) {
-                projectedPl.simplify();
-                ret.push(projectedPl);
+            var projectedPls = this.projectShape(polyline, preview, trim, true);
+            if (projectedPls.length>0) {
+                var projectedPl = projectedPls[0];
+                if (!isNull(projectedPl)) {
+                    projectedPl.simplify(0.01);
+                    ret.push(projectedPl);
+                }
             }
             this.segmentation = true;
 
@@ -469,6 +561,11 @@ Projection.prototype.projectShape = function(shape, preview, trim) {
     }
 
     if (isPolylineShape(shape)) {
+        if (!rec) {
+            // remove duplicate vertices (zero length segments):
+            shape.normalize(RS.PointTolerance);
+        }
+
         // add polyline, split up at arcs that are projected into ellipses and
         // at gaps caused by trimming:
         ret = [];
@@ -479,11 +576,15 @@ Projection.prototype.projectShape = function(shape, preview, trim) {
         // project each segment individually:
         for (i=0; i<segmentCount; i++) {
             s = shape.getSegmentAt(i).data();
-            s = this.projectShape(s, preview, trim);
+
+            s = this.projectShape(s, preview, trim, true);
 
             // iterate through projected shapes (trimming might lead to gaps):
             for (k=0; k<s.length; k++) {
                 var seg = s[k];
+                if (isFunction(seg.data)) {
+                    seg = seg.data();
+                }
 
                 var gotGap = pl.countVertices()>0 &&
                     !pl.getEndPoint().equalsFuzzy(seg.getStartPoint());
@@ -498,6 +599,7 @@ Projection.prototype.projectShape = function(shape, preview, trim) {
                 // s is an ellipse:
                 var gotEllipse = isEllipseShape(seg);
 
+                // reached last segment of current polyline:
                 if (i===segmentCount-1 || gotEllipse || gotGap) {
                     if (pl.countVertices()===1) {
                         // don't add polyline for one single shape:
@@ -514,6 +616,7 @@ Projection.prototype.projectShape = function(shape, preview, trim) {
                     }
                     else if (gotGap){
                         pl = new RPolyline();
+                        //qDebug("seg:", seg);
                         pl.appendShape(seg);
                         addPl = true;
                     }
@@ -545,6 +648,12 @@ Projection.prototype.slotRotateCW = function() {
 
 Projection.prototype.slotSegmentLengthChanged = function(l) {
     this.segmentLength = l;
+    this.clearCache();
+    this.updatePreview(true);
+};
+
+Projection.prototype.slotRetainTextsChanged = function(v) {
+    this.retainTexts = v;
     this.clearCache();
     this.updatePreview(true);
 };

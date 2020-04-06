@@ -33,6 +33,10 @@ RLinetype::RLinetype(RDocument* document, const RLinetypePattern& pattern)
     : RObject(document), pattern(pattern) {
 }
 
+RLinetype::RLinetype(const RLinetype& other) : RObject(other) {
+    pattern = other.pattern;
+}
+
 RLinetype::~RLinetype() {
 }
 
@@ -54,7 +58,7 @@ void RLinetype::init() {
 bool RLinetype::setProperty(RPropertyTypeId propertyTypeId,
     const QVariant& value, RTransaction* transaction) {
 
-    Q_UNUSED(transaction);
+    Q_UNUSED(transaction)
 
     bool ret = false;
     ret = RObject::setMember(pattern.name, value, PropertyName == propertyTypeId);

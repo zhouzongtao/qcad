@@ -575,6 +575,8 @@ function main() {
         first.showDialog();
     }
 
+    RPluginLoader.initTranslations();
+
     // correct library paths from 'library' to 'libraries':
     if (RSettings.getIntValue("Application/Version", 0)<=3000008) {
         var oldDefaultSource = new QFileInfo("library").absoluteFilePath();
@@ -592,9 +594,14 @@ function main() {
     // theme:
     applyTheme();
 
+    // native / non-native menubar:
+    if (RSettings.getBoolValue("MenuBar/UseNativeMenuBar", true)===false) {
+        QCoreApplication.setAttribute(Qt.AA_DontUseNativeMenuBar);
+    }
+
     // splash:
     var splash = undefined;
-    if (RSettings.getBoolValue("Start/EnableSplashScreen", true)) {
+    if (RSettings.getBoolValue("Startup/EnableSplashScreen", true)) {
         var fn;
         var key;
         if (RSettings.getDevicePixelRatio()===2) {

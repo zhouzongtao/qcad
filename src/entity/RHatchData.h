@@ -70,7 +70,9 @@ public:
 
     virtual bool cloneOnChange() const {
         // force clone to preserve custom pattern for undo:
-        return hasCustomPattern();
+        //return hasCustomPattern();
+        // 20190510: always clone (since allowing non-uniform scaling of hatches)
+        return true;
     }
 
     virtual RBox getBoundingBox(bool ignoreEmpty=false) const;
@@ -148,7 +150,7 @@ public:
 
     void newLoop();
     void cancelLoop();
-    void addBoundary(QSharedPointer<RShape> shape);
+    void addBoundary(QSharedPointer<RShape> shape, bool addAutoLoops = true);
     RPainterPath getBoundaryPath(double pixelSizeHint = RDEFAULT_MIN1) const;
     virtual QList<RPainterPath> getPainterPaths(bool draft = false, double pixelSizeHint = RDEFAULT_MIN1) const;
 

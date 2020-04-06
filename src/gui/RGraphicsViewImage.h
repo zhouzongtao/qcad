@@ -24,6 +24,7 @@
 
 #include <QtCore>
 #include <QPinchGesture>
+#include <QTransform>
 
 #include "RGraphicsView.h"
 #include "RPainterPath.h"
@@ -54,6 +55,11 @@ class QCADGUI_EXPORT RGraphicsViewImage : public RGraphicsView {
 public:
     RGraphicsViewImage();
     virtual ~RGraphicsViewImage();
+
+    int getNumThreads() const {
+        return numThreads;
+    }
+    void setNumThreads(int n);
 
     void clear();
 
@@ -266,7 +272,10 @@ public:
     bool getPanOptimization();
 
     virtual void paintEntities(QPainter* painter, const RBox& queryBox);
-    virtual void paintEntity(QPainter* painter, REntity::Id id, bool preview = false);
+    void paintEntitiesMulti(const RBox& queryBox);
+    void paintEntitiesThread(int threadId, QList<REntity::Id>& list, int start, int end);
+
+    virtual void paintEntityThread(int threadId, REntity::Id id, bool preview = false);
 
     virtual void paintOverlay(QPainter* painter);
 
@@ -301,6 +310,18 @@ public:
 
     void setMinimumLineweight(double lw) {
         minimumLineweight = lw;
+    }
+
+    double getMinimumLineweight() const {
+        return minimumLineweight;
+    }
+
+    void setMaximumLineweight(double lw) {
+        maximumLineweight = lw;
+    }
+
+    double getMaximumLineweight() const {
+        return maximumLineweight;
     }
 
     void setPaintOffset(const RVector& offset) {
@@ -356,8 +377,10 @@ protected:
     void updateTransformation() const;
 
 protected:
-    QImage graphicsBuffer;
+    QList<QImage> graphicsBufferThread;
+    QList<QPainter*> painterThread;
     QImage graphicsBufferWithPreview;
+    int numThreads;
 
 protected:
     bool panOptimization;
@@ -385,6 +408,7 @@ protected:
     int colorThreshold;
 
     double minimumLineweight;
+    double maximumLineweight;
 
 //    int textHeightThresholdOverride;
 //    int textHeightThreshold;
@@ -399,6 +423,7 @@ protected:
     QMap<int, QMap<RObject::Id, QList<RGraphicsSceneDrawable> > > overlayDrawables;
 
     RBox clipBox;
+    QList<QStack<QTransform> > entityTransformThread;
     RVector paintOffset;
     bool alphaEnabled;
 

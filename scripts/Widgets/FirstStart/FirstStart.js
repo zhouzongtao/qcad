@@ -35,9 +35,16 @@ FirstStart.prototype.showDialog = function() {
     var pathFi = new QFileInfo(this.path);
     this.dialog.windowTitle = qsTr("%1 First Start").arg(qApp.applicationName);
     if (qApp.applicationName.contains("QCAD")) {
-        this.dialog.styleSheet =
-             "QDialog { border-image: url(" + pathFi.absoluteFilePath() + "/firststart.jpg) 0 0 0 0 stretch stretch; border-width: 0px; }";
-            //"QDialog{ background-image: url(" + pathFi.absoluteFilePath() + "/firststart.png) }";
+        if (RSettings.hasDarkGuiBackground()) {
+            this.dialog.styleSheet =
+                 "QDialog { border-image: url(" + pathFi.absoluteFilePath() + "/firststart-inverse.jpg) 0 0 0 0 stretch stretch; border-width: 0px; }";
+        }
+        else {
+            this.dialog.styleSheet =
+                 "QDialog { border-image: url(" + pathFi.absoluteFilePath() + "/firststart.jpg) 0 0 0 0 stretch stretch; border-width: 0px; }";
+                //"QDialog{ background-image: url(" + pathFi.absoluteFilePath() + "/firststart.png) }";
+        }
+
     }
     else {
         this.dialog.findChild("LanguageBackground").styleSheet = "";
@@ -179,12 +186,11 @@ FirstStart.prototype.changeLanguage = function(code) {
     
     if (code !== "en") {
         var translators = [
-            [ "FirstStart", this.path + "/ts" ],
-            [ "UnitSettings", "scripts/Edit/DrawingPreferences/UnitSettings/ts" ],
-            [ "InputPreferences", "scripts/Edit/AppPreferences/InputPreferences/ts" ]
+            [ "scripts", "ts" ],
+            [ "scripts", ":/ts" ]
         ];
 
-        for (var i=0; i<translators.length; i++) {
+        for (i=0; i<translators.length; i++) {
             var translator = new QTranslator(qApp);
             if (translator.load(translators[i][0] + "_" + code, translators[i][1])) {
                 QCoreApplication.installTranslator(translator);

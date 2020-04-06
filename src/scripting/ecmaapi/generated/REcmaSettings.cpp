@@ -331,11 +331,15 @@
             
             REcmaHelper::registerFunction(&engine, &ctor, getReferencePointShape, "getReferencePointShape");
             
+            REcmaHelper::registerFunction(&engine, &ctor, getPropertyEditorShowOnRequest, "getPropertyEditorShowOnRequest");
+            
             REcmaHelper::registerFunction(&engine, &ctor, getPolarCoordinateSeparator, "getPolarCoordinateSeparator");
             
             REcmaHelper::registerFunction(&engine, &ctor, getCartesianCoordinateSeparator, "getCartesianCoordinateSeparator");
             
             REcmaHelper::registerFunction(&engine, &ctor, getRelativeCoordinatePrefix, "getRelativeCoordinatePrefix");
+            
+            REcmaHelper::registerFunction(&engine, &ctor, isDarkMode, "isDarkMode");
             
             REcmaHelper::registerFunction(&engine, &ctor, hasDarkGuiBackground, "hasDarkGuiBackground");
             
@@ -7225,6 +7229,45 @@
             return result;
         }
          QScriptValue
+        REcmaSettings::getPropertyEditorShowOnRequest
+        (QScriptContext* context, QScriptEngine* engine) 
+        
+        {
+            //REcmaHelper::functionStart("REcmaSettings::getPropertyEditorShowOnRequest", context, engine);
+            //qDebug() << "ECMAScript WRAPPER: REcmaSettings::getPropertyEditorShowOnRequest";
+            //QCoreApplication::processEvents();
+
+            QScriptValue result = engine->undefinedValue();
+            
+    
+    if( context->argumentCount() ==
+    0
+    ){
+    // prepare arguments:
+    
+    // end of arguments
+
+    // call C++ function:
+    // return type 'bool'
+    bool cppResult =
+        RSettings::
+       getPropertyEditorShowOnRequest();
+        // return type: bool
+                // standard Type
+                result = QScriptValue(cppResult);
+            
+    } else
+
+
+        
+            {
+               return REcmaHelper::throwError("Wrong number/types of arguments for RSettings.getPropertyEditorShowOnRequest().",
+                   context);
+            }
+            //REcmaHelper::functionEnd("REcmaSettings::getPropertyEditorShowOnRequest", context, engine);
+            return result;
+        }
+         QScriptValue
         REcmaSettings::getPolarCoordinateSeparator
         (QScriptContext* context, QScriptEngine* engine) 
         
@@ -7339,6 +7382,45 @@
                    context);
             }
             //REcmaHelper::functionEnd("REcmaSettings::getRelativeCoordinatePrefix", context, engine);
+            return result;
+        }
+         QScriptValue
+        REcmaSettings::isDarkMode
+        (QScriptContext* context, QScriptEngine* engine) 
+        
+        {
+            //REcmaHelper::functionStart("REcmaSettings::isDarkMode", context, engine);
+            //qDebug() << "ECMAScript WRAPPER: REcmaSettings::isDarkMode";
+            //QCoreApplication::processEvents();
+
+            QScriptValue result = engine->undefinedValue();
+            
+    
+    if( context->argumentCount() ==
+    0
+    ){
+    // prepare arguments:
+    
+    // end of arguments
+
+    // call C++ function:
+    // return type 'bool'
+    bool cppResult =
+        RSettings::
+       isDarkMode();
+        // return type: bool
+                // standard Type
+                result = QScriptValue(cppResult);
+            
+    } else
+
+
+        
+            {
+               return REcmaHelper::throwError("Wrong number/types of arguments for RSettings.isDarkMode().",
+                   context);
+            }
+            //REcmaHelper::functionEnd("REcmaSettings::isDarkMode", context, engine);
             return result;
         }
          QScriptValue

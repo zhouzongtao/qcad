@@ -80,6 +80,7 @@ public:
     bool appendShapeAuto(const RShape& shape);
 
     void appendVertex(const RVector& vertex, double bulge = 0.0, double w1 = 0.0, double w2 = 0.0);
+    void appendVertex(double x, double y, double bulge = 0.0, double w1 = 0.0, double w2 = 0.0);
     void prependVertex(const RVector& vertex, double bulge = 0.0, double w1 = 0.0, double w2 = 0.0);
     void insertVertex(int index, const RVector& vertex, double bulgeBefore = 0.0, double bulgeAfter = 0.0);
     void insertVertexAt(const RVector& point);
@@ -90,7 +91,7 @@ public:
     void removeVerticesAfter(int index);
     void removeVerticesBefore(int index);
 
-    bool isEmpty() {
+    bool isEmpty() const {
         return countVertices()==0;
     }
 
@@ -179,8 +180,10 @@ public:
     virtual QList<RVector> getEndPoints() const;
     virtual QList<RVector> getMiddlePoints() const;
     virtual QList<RVector> getCenterPoints() const;
+    virtual RVector getPointAtPercent(double p) const;
     virtual QList<RVector> getPointsWithDistanceToEnd(
         double distance, int from = RS::FromAny) const;
+    virtual QList<RVector> getPointCloud(double segmentLength) const;
 
     virtual double getAngleAt(double distance, RS::From from = RS::FromStart) const;
 
@@ -239,6 +242,7 @@ public:
             const RShape& trimmedShape2, RS::Ending ending2, int segmentIndex2,
             const RShape* cornerShape = NULL) const;
 
+    bool isConcave() const;
     QList<RVector> getConvexVertices(bool convex = true) const;
     QList<RVector> getConcaveVertices() const;
 
@@ -253,6 +257,7 @@ public:
 
     QList<RPolyline> morph(const RPolyline& target, int steps, RS::Easing easing = RS::Linear, bool zLinear = true, double customFactor = RNANDOUBLE) const;
     RPolyline roundAllCorners(double radius) const;
+    RPolyline getPolygonHull(double angle, double tolerance, bool inner = false) const;
 
     static bool hasProxy() {
         return polylineProxy!=NULL;

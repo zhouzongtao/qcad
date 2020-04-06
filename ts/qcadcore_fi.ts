@@ -96,7 +96,7 @@
     <message>
         <location line="+3"/>
         <source>Astro</source>
-        <translation>au</translation>
+        <translation>Astronominen</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -217,7 +217,7 @@
     <message>
         <location filename="../src/core/RDocumentVariables.cpp" line="+45"/>
         <source>Current Layer ID</source>
-        <translation>Nykyinen tason tunniste</translation>
+        <translation>Nykyisen tason tunniste</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -355,8 +355,8 @@
         <translation>Määritteet</translation>
     </message>
     <message>
-        <location filename="../src/core/REntity.cpp" line="+87"/>
-        <location filename="../src/core/RObject.cpp" line="+67"/>
+        <location filename="../src/core/REntity.cpp" line="+91"/>
+        <location filename="../src/core/RObject.cpp" line="+68"/>
         <source>Type</source>
         <translation>Tyyppi</translation>
     </message>
@@ -409,7 +409,7 @@
         <location line="+1"/>
         <location line="+1"/>
         <source>Boundary</source>
-        <translation>Raja</translation>
+        <translation>Rajaviiva</translation>
     </message>
     <message>
         <location line="-3"/>
@@ -454,7 +454,12 @@
     <message>
         <location line="+1"/>
         <source>Selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Valittu</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Invisible</source>
+        <translation>Näkymätön</translation>
     </message>
     <message>
         <location filename="../src/core/REntity.cpp" line="+2"/>
@@ -557,13 +562,13 @@
     <message>
         <location line="+1"/>
         <source>On</source>
-        <translation> </translation>
+        <translation>Päälle</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+1"/>
         <source>View Center</source>
-        <translation>Näytä keskus</translation>
+        <translation>Näytä keskiosa</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -649,7 +654,7 @@
         <location line="+1"/>
         <location line="+1"/>
         <source>Insertion Base</source>
-        <translation>Lisäosa</translation>
+        <translation>Lisäysalusta</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -666,9 +671,9 @@
         <translation>Suurin määrä</translation>
     </message>
     <message>
-        <location filename="../src/core/RBlockReferenceData.cpp" line="+651"/>
+        <location filename="../src/core/RBlockReferenceData.cpp" line="+852"/>
         <source>Circular (recursive) block referencing detected:</source>
-        <translation>Pyöreä (rekursiivinen) lohkojen vertailu havaittu:</translation>
+        <translation>Pyöreä (rekursiivinen) lohkoviittaus havaittu:</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -708,11 +713,11 @@
     </message>
     <message>
         <source>Linetype</source>
-        <translation type="vanished">Viivan tyyppi</translation>
+        <translation type="vanished">Viivatyyppi</translation>
     </message>
     <message>
         <source>Lineweight</source>
-        <translation type="vanished">Viivan paksuus</translation>
+        <translation type="vanished">Viivapaksuus</translation>
     </message>
 </context>
 <context>
@@ -802,7 +807,7 @@
         <translation type="vanished">Reuna (suuri)</translation>
     </message>
     <message>
-        <location filename="../src/core/RLinetype.cpp" line="+48"/>
+        <location filename="../src/core/RLinetype.cpp" line="+52"/>
         <source>Name</source>
         <translation>Nimi</translation>
     </message>
@@ -814,7 +819,7 @@
     <message>
         <location line="+1"/>
         <source>Metric</source>
-        <translation>Metrijärjestelmä</translation>
+        <translation>Metrinen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -825,7 +830,7 @@
 <context>
     <name>RLinetypePattern</name>
     <message>
-        <location filename="../src/core/RLinetypePattern.cpp" line="+856"/>
+        <location filename="../src/core/RLinetypePattern.cpp" line="+869"/>
         <source>By Layer</source>
         <translation>Tason mukaan</translation>
     </message>
@@ -858,7 +863,7 @@
         <location line="+1"/>
         <location line="+1"/>
         <source>Dash dot</source>
-        <translation>Viiva - piste</translation>
+        <translation>Pisteviiva</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -918,7 +923,7 @@
     <message>
         <location line="+1"/>
         <source>ISO long-dash triple-dot</source>
-        <translation>ISO pitkäviiva - kolmoispiste</translation>
+        <translation>ISO pitkä ajatusviiva - kolmoispiste</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -988,7 +993,7 @@
     <message>
         <location line="+1"/>
         <source>Zig Zag</source>
-        <translation>Siksak kuvio</translation>
+        <translation>Siksak</translation>
     </message>
     <message>
         <location line="+1"/>

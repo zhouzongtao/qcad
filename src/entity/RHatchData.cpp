@@ -497,7 +497,12 @@ void RHatchData::cancelLoop() {
     update();
 }
 
-void RHatchData::addBoundary(QSharedPointer<RShape> shape) {
+/**
+ * Add a boundary shape to the current loop.
+ * \param addAutoLoops True: create new loop if boundary does not connect.
+ * Otherwise add line segment on the fly (DXF/DWG import).
+ */
+void RHatchData::addBoundary(QSharedPointer<RShape> shape, bool addAutoLoops) {
     if (boundary.size()==0) {
         qWarning() << "RHatchData::addBoundary: no loops found";
         return;
@@ -518,7 +523,7 @@ void RHatchData::addBoundary(QSharedPointer<RShape> shape) {
         }
     }
     else {
-        // if the current loop is not empty, check if entity connects:
+        // if the current loop is not empty, check if shape connects:
         if (!boundary.last().isEmpty()) {
             QSharedPointer<RShape> prev = boundary.last().last();
             QSharedPointer<RShape> next = shape;
@@ -527,8 +532,21 @@ void RHatchData::addBoundary(QSharedPointer<RShape> shape) {
                 RVector sp = next->getStartPoint();
 
                 if (!ep.equalsFuzzy(sp, 0.001)) {
-                    // inserting loop on the fly:
-                    newLoop();
+                    if (addAutoLoops) {
+                        // inserting loop on the fly:
+                        newLoop();
+                    }
+                    else {
+                        // inserting line segment on the fly to closest match point,
+                        // reverse shape if necessary:
+                        if (ep.getDistanceTo(sp) < ep.getDistanceTo(next->getEndPoint())) {
+                            boundary.last().append(QSharedPointer<RLine>(new RLine(ep, sp)));
+                        }
+                        else {
+                            boundary.last().append(QSharedPointer<RLine>(new RLine(ep, next->getEndPoint())));
+                            shape->reverse();
+                        }
+                    }
                 }
             }
             else {
@@ -541,6 +559,10 @@ void RHatchData::addBoundary(QSharedPointer<RShape> shape) {
 //        QSharedPointer<RArc> arc = shape.dynamicCast<RArc>();
 //        if (!arc.isNull() && fabs(arc->getSweep())<RMath::deg2rad(2)) {
 //            boundary.last().append(QSharedPointer<RShape>(new RLine(arc->getStartPoint(), arc->getEndPoint())));
+//        }
+//        QSharedPointer<RArc> arc = shape.dynamicCast<RArc>();
+//        if (!arc.isNull() && fabs(arc->getSweep())>M_PI*2-RS::AngleTolerance) {
+//            boundary.last().append(QSharedPointer<RShape>(new RCircle(arc->getCenter(), arc->getRadius())));
 //        }
 //        else {
             boundary.last().append(shape);
@@ -795,7 +817,8 @@ QList<RPainterPath> RHatchData::getPainterPaths(bool draft, double pixelSizeHint
             QList<RLine> segments = getSegments(unclippedLine);
 
             RPainterPathExporter ppExporter;
-            ppExporter.setExportZeroLinesAsPoints(false);
+            //ppExporter.setExportZeroLinesAsPoints(false);
+            ppExporter.setExportZeroLinesAsPoints(true);
             // ignore zero lines if
             // line was split up into segments
             ppExporter.setIgnoreZeroLines(!hasDots);
@@ -817,6 +840,7 @@ QList<RPainterPath> RHatchData::getPainterPaths(bool draft, double pixelSizeHint
                     }
                     ppExporter.exportLine(segments[si], offset);
                     RPainterPath path = ppExporter.getPainterPath();
+                    path.setSimplePointDisplay(true);
 
                     if (!path.isEmpty()) {
                         //clippedPattern.addPath(path);
@@ -1068,6 +1092,7 @@ RPainterPath RHatchData::getBoundaryPath(double pixelSizeHint) const {
             qWarning() << "RHatchData::getBoundaryPath: loop not closed: "
                        << "end (" << cursor <<  ") does not connect to "
                        << "start (" << loopStartPoint << ")";
+            //boundaryPath.lineTo(loopStartPoint);
             return RPainterPath();
         }
     }

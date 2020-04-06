@@ -117,6 +117,18 @@ xmlns:rs="http://www.ribbonsoft.com">
         <arg type="double" typeName="double" name="w2"
         hasDefault="true" default="0.0" isConst="false" />
       </variant>
+      <variant returnType="void" isPureVirtual="false">
+        <arg type="double" typeName="double" name="x"
+        isConst="false" />
+        <arg type="double" typeName="double" name="y"
+        isConst="false" />
+        <arg type="double" typeName="double" name="bulge"
+        hasDefault="true" default="0.0" isConst="false" />
+        <arg type="double" typeName="double" name="w1"
+        hasDefault="true" default="0.0" isConst="false" />
+        <arg type="double" typeName="double" name="w2"
+        hasDefault="true" default="0.0" isConst="false" />
+      </variant>
     </method>
     <method name="prependVertex" cppName="prependVertex"
     specifier="public" isStatic="false" isVirtual="false"
@@ -616,6 +628,14 @@ xmlns:rs="http://www.ribbonsoft.com">
       <variant returnType="QList &lt; RVector &gt;"
       isPureVirtual="false" />
     </method>
+    <method name="getPointAtPercent" cppName="getPointAtPercent"
+    specifier="public" isStatic="false" isVirtual="true"
+    isScriptOverwritable="true">
+      <variant returnType="RVector" isPureVirtual="false">
+        <arg type="double" typeName="double" name="p"
+        isConst="false" />
+      </variant>
+    </method>
     <method name="getPointsWithDistanceToEnd"
     cppName="getPointsWithDistanceToEnd" specifier="public"
     isStatic="false" isVirtual="true" isScriptOverwritable="true">
@@ -625,6 +645,15 @@ xmlns:rs="http://www.ribbonsoft.com">
         isConst="false" />
         <arg type="int" typeName="int" name="from"
         hasDefault="true" default="RS :: FromAny"
+        isConst="false" />
+      </variant>
+    </method>
+    <method name="getPointCloud" cppName="getPointCloud"
+    specifier="public" isStatic="false" isVirtual="true"
+    isScriptOverwritable="true">
+      <variant returnType="QList &lt; RVector &gt;"
+      isPureVirtual="false">
+        <arg type="double" typeName="double" name="segmentLength"
         isConst="false" />
       </variant>
     </method>
@@ -938,6 +967,10 @@ xmlns:rs="http://www.ribbonsoft.com">
         hasDefault="true" default="NULL" isConst="true" />
       </variant>
     </method>
+    <method name="isConcave" cppName="isConcave" specifier="public"
+    isStatic="false" isVirtual="false" isScriptOverwritable="true">
+      <variant returnType="bool" isPureVirtual="false" />
+    </method>
     <method name="getConvexVertices" cppName="getConvexVertices"
     specifier="public" isStatic="false" isVirtual="false"
     isScriptOverwritable="true">
@@ -1017,6 +1050,18 @@ xmlns:rs="http://www.ribbonsoft.com">
       <variant returnType="RPolyline" isPureVirtual="false">
         <arg type="double" typeName="double" name="radius"
         isConst="false" />
+      </variant>
+    </method>
+    <method name="getPolygonHull" cppName="getPolygonHull"
+    specifier="public" isStatic="false" isVirtual="false"
+    isScriptOverwritable="true">
+      <variant returnType="RPolyline" isPureVirtual="false">
+        <arg type="double" typeName="double" name="angle"
+        isConst="false" />
+        <arg type="double" typeName="double" name="tolerance"
+        isConst="false" />
+        <arg type="bool" typeName="bool" name="inner"
+        hasDefault="true" default="false" isConst="false" />
       </variant>
     </method>
     <method name="hasProxy" cppName="hasProxy" specifier="public"

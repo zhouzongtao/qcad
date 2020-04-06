@@ -9,7 +9,7 @@
         <translation>About %1</translation>
     </message>
     <message>
-        <location line="+49"/>
+        <location line="+53"/>
         <location line="+123"/>
         <source>Version:</source>
         <translation>Version:</translation>
@@ -135,11 +135,12 @@
     </message>
     <message>
         <location line="+1"/>
+        <location line="+375"/>
         <source>Plugin:</source>
         <translation>Plugin:</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="-350"/>
         <source>ID:</source>
         <translation>ID:</translation>
     </message>
@@ -201,6 +202,11 @@
         <translation>Credits</translation>
     </message>
     <message>
+        <location line="+162"/>
+        <source>Licenses</source>
+        <translation>Licenses</translation>
+    </message>
+    <message>
         <location filename="../scripts/Help/About/AboutInit.js" line="+2"/>
         <source>&amp;About...</source>
         <translation>&amp;About...</translation>
@@ -214,12 +220,17 @@
         <translation>Programming</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+52"/>
+        <source>Hatch Patterns</source>
+        <translation>Hatch Patterns</translation>
+    </message>
+    <message>
+        <location line="+31"/>
         <source>Translations</source>
         <translation>Translations</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+15"/>
         <source>Templates</source>
         <translation>Templates</translation>
     </message>
@@ -260,6 +271,11 @@
         <location line="+67"/>
         <source>System</source>
         <translation>System</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Licenses</source>
+        <translation>Licenses</translation>
     </message>
 </context>
 <context>
@@ -372,7 +388,7 @@ the preference changes to take effect.</translation>
 <context>
     <name>Apollonius</name>
     <message>
-        <location filename="../scripts/Apollonius.js" line="+1769"/>
+        <location filename="../scripts/Apollonius.js" line="+1812"/>
         <source>Invalid radius</source>
         <translation>Invalid radius</translation>
     </message>
@@ -819,12 +835,12 @@ the preference changes to take effect.</translation>
 <context>
     <name>ArcTangential</name>
     <message>
-        <location filename="../scripts/Draw/Arc/ArcTangential/ArcTangential.js" line="+63"/>
+        <location filename="../scripts/Draw/Arc/ArcTangential/ArcTangential.js" line="+64"/>
         <source>Choose base line or base arc</source>
         <translation>Choose base line or base arc</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Choose end point of arc</source>
         <translation>Choose end point of arc</translation>
     </message>
@@ -857,12 +873,12 @@ the preference changes to take effect.</translation>
         <translation>Autosave</translation>
     </message>
     <message>
-        <location line="+95"/>
+        <location line="+100"/>
         <source>Autosaving to:</source>
         <translation>Autosaving to:</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+23"/>
         <source>Autosave failed:</source>
         <translation>Autosave failed:</translation>
     </message>
@@ -1235,7 +1251,7 @@ Do you wish to recover it?</translation>
 <context>
     <name>BitmapExportWorker</name>
     <message>
-        <location filename="../scripts/File/BitmapExport/BitmapExportWorker.js" line="+115"/>
+        <location filename="../scripts/File/BitmapExport/BitmapExportWorker.js" line="+120"/>
         <source>Invalid image size (width x height must be less than %1)</source>
         <translation>Invalid image size (width x height must be less than %1)</translation>
     </message>
@@ -1332,7 +1348,7 @@ Do you wish to recover it?</translation>
 <context>
     <name>BlockList</name>
     <message>
-        <location filename="../scripts/Widgets/BlockList/BlockList.js" line="+491"/>
+        <location filename="../scripts/Widgets/BlockList/BlockList.js" line="+492"/>
         <source>Widgets</source>
         <translation>Widgets</translation>
     </message>
@@ -1380,7 +1396,7 @@ Do you wish to recover it?</translation>
 <context>
     <name>BlockListExport</name>
     <message>
-        <location filename="../scripts/Misc/MiscBlock/BlockListExport/BlockListExport.js" line="+91"/>
+        <location filename="../scripts/Misc/MiscBlock/BlockListExport/BlockListExport.js" line="+92"/>
         <source>Export Block List (CSV)</source>
         <translation>Export Block List (CSV)</translation>
     </message>
@@ -1398,7 +1414,7 @@ Do you wish to recover it?</translation>
 <context>
     <name>BreakOut</name>
     <message>
-        <location filename="../scripts/Modify/BreakOut/BreakOut.js" line="+58"/>
+        <location filename="../scripts/Modify/BreakOut/BreakOut.js" line="+59"/>
         <source>Choose line, arc, circle, ellipse, spline or polyline segment</source>
         <translation>Choose line, arc, circle, ellipse, spline or polyline segment</translation>
     </message>
@@ -1421,12 +1437,12 @@ Do you wish to recover it?</translation>
 <context>
     <name>BreakOutGap</name>
     <message>
-        <location filename="../scripts/Modify/BreakOutGap/BreakOutGap.js" line="+53"/>
+        <location filename="../scripts/Modify/BreakOutGap/BreakOutGap.js" line="+54"/>
         <source>Choose line, arc or circle</source>
         <translation>Choose line, arc or circle</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Specify point</source>
         <translation>Specify point</translation>
     </message>
@@ -1459,14 +1475,11 @@ Do you wish to recover it?</translation>
         <translation>First break point</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <location line="+8"/>
-        <location line="+7"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="+8"/>
         <source>Second break point</source>
         <translation>Second break point</translation>
     </message>
@@ -1863,7 +1876,7 @@ Do you wish to recover it?</translation>
     </message>
     <message>
         <location line="+116"/>
-        <location line="+61"/>
+        <location line="+65"/>
         <source>No solution</source>
         <translation>No solution</translation>
     </message>
@@ -2166,18 +2179,18 @@ Do you wish to recover it?</translation>
     </message>
     <message>
         <location line="+0"/>
-        <location line="+47"/>
+        <location line="+60"/>
         <location filename="../scripts/Widgets/CommandLine/CommandLine.ui" line="+20"/>
         <source>Command Line</source>
         <translation>Command Line</translation>
     </message>
     <message>
-        <location line="-17"/>
+        <location line="-30"/>
         <source>&amp;Command Line</source>
         <translation>&amp;Command Line</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+217"/>
         <source>Invalid value:</source>
         <translation>Invalid value:</translation>
     </message>
@@ -2323,9 +2336,8 @@ Do you wish to recover it?</translation>
         <translation>Convert:</translation>
     </message>
     <message>
-        <location line="+7"/>
         <source>...</source>
-        <translation>...</translation>
+        <translation type="vanished">...</translation>
     </message>
     <message>
         <location filename="../scripts/Edit/ConvertUnit/ConvertUnitInit.js" line="+2"/>
@@ -2554,7 +2566,7 @@ Do you wish to recover it?</translation>
 <context>
     <name>DefaultAction</name>
     <message>
-        <location filename="../scripts/DefaultAction.js" line="+89"/>
+        <location filename="../scripts/DefaultAction.js" line="+90"/>
         <source>Select entity or region</source>
         <translation>Select entity or region</translation>
     </message>
@@ -2564,27 +2576,39 @@ Do you wish to recover it?</translation>
         <translation>Move entity or reference</translation>
     </message>
     <message>
-        <location line="+11"/>
         <source>Set second corner</source>
-        <translation>Set second corner</translation>
+        <translation type="vanished">Set second corner</translation>
     </message>
     <message>
-        <location line="+6"/>
         <source>Specify target point of reference point</source>
-        <translation>Specify target point of reference point</translation>
+        <translation type="vanished">Specify target point of reference point</translation>
+    </message>
+    <message>
+        <source>Specify target point of selection</source>
+        <translation type="vanished">Specify target point of selection</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Second corner</source>
+        <translation>Second corner</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Specify target point of selection</source>
-        <translation>Specify target point of selection</translation>
+        <source>Target point of reference point</source>
+        <translation>Target point of reference point</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
+        <source>Target point of selection</source>
+        <translation>Target point of selection</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>Move entity to desired location</source>
         <translation>Move entity to desired location</translation>
     </message>
     <message>
-        <location line="+384"/>
+        <location line="+388"/>
         <source>Move Reference Point</source>
         <translation>Move Reference Point</translation>
     </message>
@@ -2768,6 +2792,22 @@ Do you wish to recover it?</translation>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
+    <message>
+        <source>Scale:</source>
+        <translation type="obsolete">Scale:</translation>
+    </message>
+    <message>
+        <source>0.01</source>
+        <translation type="obsolete">0.01</translation>
+    </message>
+    <message>
+        <source>297</source>
+        <translation type="obsolete">297</translation>
+    </message>
+    <message>
+        <source>210</source>
+        <translation type="obsolete">210</translation>
+    </message>
 </context>
 <context>
     <name>DimAligned</name>
@@ -2805,12 +2845,12 @@ Do you wish to recover it?</translation>
         <translation>Arc or first of two lines</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>Second line</source>
         <translation>Second line</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>Dimension arc location</source>
         <translation>Dimension arc location</translation>
     </message>
@@ -3343,7 +3383,7 @@ is already in the list.</translation>
 <context>
     <name>Divide</name>
     <message>
-        <location filename="../scripts/Modify/Divide/Divide.js" line="+67"/>
+        <location filename="../scripts/Modify/Divide/Divide.js" line="+68"/>
         <source>Choose line, arc, circle, ellipse, spline or polyline</source>
         <translation>Choose line, arc, circle, ellipse, spline or polyline</translation>
     </message>
@@ -3353,12 +3393,12 @@ is already in the list.</translation>
         <translation>Choose line, arc, circle or ellipse</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+12"/>
         <source>Specify point</source>
         <translation>Specify point</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Specify second point</source>
         <translation>Specify second point</translation>
     </message>
@@ -3520,12 +3560,11 @@ is already in the list.</translation>
         <translation>Next vertex</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
-        <location line="+418"/>
+        <location line="+421"/>
         <source>close</source>
         <translation>close</translation>
     </message>
@@ -3645,12 +3684,17 @@ is already in the list.</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+2078"/>
+        <location line="+2097"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location line="-1801"/>
+        <location line="-2096"/>
+        <source>Done</source>
+        <translation>Done</translation>
+    </message>
+    <message>
+        <location line="+277"/>
         <location line="+136"/>
         <source>Active Tool:</source>
         <translation>Active Tool:</translation>
@@ -3661,7 +3705,7 @@ is already in the list.</translation>
         <translation>None</translation>
     </message>
     <message>
-        <location line="+669"/>
+        <location line="+687"/>
         <source>Options</source>
         <translation>Options</translation>
     </message>
@@ -3704,6 +3748,11 @@ is already in the list.</translation>
         <location line="+4"/>
         <source>Entity is not a line.</source>
         <translation>Entity is not a line.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Entity is not an arc.</source>
+        <translation>Entity is not an arc.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3764,7 +3813,7 @@ is already in the list.</translation>
         <translation>&amp;Script Shell</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+38"/>
         <location filename="../scripts/Misc/MiscDevelopment/EcmaScriptShell/EcmaScriptShell.ui" line="+14"/>
         <source>Script Shell</source>
         <translation>Script Shell</translation>
@@ -4258,7 +4307,7 @@ is already in the list.</translation>
         <translation>Counterclockwise polyline:</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+15"/>
         <source>&amp;Output Polyline Vertices</source>
         <translation>&amp;Output Polyline Vertices</translation>
     </message>
@@ -4318,7 +4367,7 @@ is already in the list.</translation>
         <translation type="vanished">&amp;Mandelbrot</translation>
     </message>
     <message>
-        <location filename="../scripts/Misc/Examples/MathExamples/ExMandelbrot/ExMandelbrot.js" line="+51"/>
+        <location filename="../scripts/Misc/Examples/MathExamples/ExMandelbrot/ExMandelbrot.js" line="+48"/>
         <source>&amp;Mandelbrot Example</source>
         <translation>&amp;Mandelbrot</translation>
     </message>
@@ -4377,7 +4426,7 @@ is already in the list.</translation>
         <translation>Example Files %1</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+84"/>
         <source>Info</source>
         <translation>Info</translation>
     </message>
@@ -4404,7 +4453,7 @@ is already in the list.</translation>
         <translation>Example Files %1</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+54"/>
         <source>Read from file: &quot;%1&quot;</source>
         <translation>Read from file: &quot;%1&quot;</translation>
     </message>
@@ -4481,7 +4530,7 @@ is already in the list.</translation>
         <translation>Position</translation>
     </message>
     <message>
-        <location line="+44"/>
+        <location line="+46"/>
         <source>Three Points</source>
         <translation>Three Points</translation>
     </message>
@@ -4661,7 +4710,7 @@ is already in the list.</translation>
     <name>FirstStart</name>
     <message>
         <location filename="../scripts/Widgets/FirstStart/FirstStart.js" line="+36"/>
-        <location line="+219"/>
+        <location line="+225"/>
         <source>%1 First Start</source>
         <translation>%1 First Start</translation>
     </message>
@@ -4709,6 +4758,314 @@ is already in the list.</translation>
         <location line="+1"/>
         <source>Background Color:</source>
         <translation>Background Color:</translation>
+    </message>
+</context>
+<context>
+    <name>FlexPainter</name>
+    <message>
+        <location filename="../scripts/Misc/Examples/MathExamples/FlexPainter/FlexPainter.js" line="+1816"/>
+        <source>&amp;FlexPainter</source>
+        <translation>&amp;FlexPainter</translation>
+    </message>
+</context>
+<context>
+    <name>FlexPainterDialog</name>
+    <message>
+        <location filename="../scripts/Misc/Examples/MathExamples/FlexPainter/FlexPainterDialog.ui" line="+14"/>
+        <source>Painter Options</source>
+        <translation>Painter Options</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Painters casting options</source>
+        <translation>Painters casting options</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Mirror painters over baseline</source>
+        <translation>Mirror painters over baseline</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Flip Painters</source>
+        <translation>Flip Painters</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Group all castings to one operation</source>
+        <translation>Group all castings to one operation</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Cast in group</source>
+        <translation>Cast in group</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Cast on newly sub-layer &apos;Painted&apos; if applicable</source>
+        <translation>Cast on newly sub-layer &apos;Painted&apos; if applicable</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Cast on sub-layer</source>
+        <translation>Cast on sub-layer</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Start with casting a begin apex on open forms</source>
+        <translation>Start with casting a begin apex on open forms</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Add Begin Apex</source>
+        <translation>Add Begin Apex</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>End with casting an end apex on open forms</source>
+        <translation>End with casting an end apex on open forms</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Add End Apex</source>
+        <translation>Add End Apex</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Add insertions in between eg. spacers, knots</source>
+        <translation>Add insertions in between eg. spacers, knots</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Add Insertions</source>
+        <translation>Add Insertions</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Painter set</source>
+        <translation>Painter set</translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>Preview of painters</source>
+        <translation>Preview of painters</translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>Select painter set</source>
+        <translation>Select painter set</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>CurtainRope</source>
+        <translation>CurtainRope</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>OrthogonalBar</source>
+        <translation>OrthogonalBar</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>OrthogonalPointsGlobal</source>
+        <translation>OrthogonalPointsGlobal</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>SinusoidWave</source>
+        <translation>SinusoidWave</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>SinusoidWaveGlobal</source>
+        <translation>SinusoidWaveGlobal</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>3PhaseWaveGlobal</source>
+        <translation>3PhaseWaveGlobal</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>TriangleWave</source>
+        <translation>TriangleWave</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>SawtoothWave</source>
+        <translation>SawtoothWave</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>SqaureWave</source>
+        <translation>SqaureWave</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>SteppedWave</source>
+        <translation>SteppedWave</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>SqauredShape</source>
+        <translation>SqauredShape</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>SqauredShapeFlexing</source>
+        <translation>SqauredShapeFlexing</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>AllPainterDataTypes</source>
+        <translation>AllPainterDataTypes</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Insertion type</source>
+        <translation>Insertion type</translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>Preview of insertion</source>
+        <translation>Preview of insertion</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>Select Insertion or Enter void space</source>
+        <translation>Select Insertion or Enter void space</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>&lt;Enter space size&gt;</source>
+        <translation>&lt;Enter space size&gt;</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Curtain Rope Knot</source>
+        <translation>Curtain Rope Knot</translation>
+    </message>
+    <message>
+        <location line="+328"/>
+        <source>Document Units</source>
+        <translation>Document Units</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>#Undefined#</source>
+        <translation>#Undefined#</translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Enter painter width (+0)</source>
+        <translation>Enter painter width (+0)</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Width : </source>
+        <translation>Width: </translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>0</source>
+        <translation>0</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Repetitive Painter options</source>
+        <translation>Repetitive Painter options</translation>
+    </message>
+    <message>
+        <location line="+62"/>
+        <source>Enter main painter stepsize (+0)</source>
+        <translation>Enter main painter stepsize (+0)</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Stepsize :</source>
+        <translation>Stepsize:</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Enter main painter length (+)</source>
+        <translation>Enter main painter length (+)</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Length :</source>
+        <translation>Length:</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Keep painters proportional</source>
+        <translation>Keep painters proportional</translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Select percentage of Stepsize</source>
+        <translation>Select percentage of Stepsize</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Closed Forms shifting % :</source>
+        <translation>Closed Forms shifting %:</translation>
+    </message>
+    <message>
+        <location line="+62"/>
+        <source>Open forms scaling options</source>
+        <translation>Open forms scaling options</translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>Adapt scaling f 1.00-0.90 to fit the whole form</source>
+        <translation>Adapt scaling f 1.00-0.90 to fit the whole form</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Dynamically scale to fit</source>
+        <translation>Dynamically scale to fit</translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>Align with begin</source>
+        <translation>Align with begin</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Centered</source>
+        <translation>Centered</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Align with End</source>
+        <translation>Align with End</translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>Verbose info (persistent on)</source>
+        <translation>Verbose info (persistent on)</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Verbose *</source>
+        <translation>Verbose *</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Deleted painted over base entities (persistent off)</source>
+        <translation>Deleted painted over base entities (persistent off)</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Delete Base Entities *</source>
+        <translation>Delete Base Entities *</translation>
+    </message>
+</context>
+<context>
+    <name>FlexPainterOptions</name>
+    <message>
+        <source>Preview</source>
+        <translation type="obsolete">Preview</translation>
     </message>
 </context>
 <context>
@@ -4878,7 +5235,16 @@ is already in the list.</translation>
         <translation>Double-click to select contour</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+15"/>
+        <source>Tolerance:</source>
+        <translation>Tolerance:</translation>
+    </message>
+    <message>
+        <source>0.001</source>
+        <translation type="obsolete">0.001</translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>Right double-click to reset</source>
         <translation>Right double-click to reset</translation>
     </message>
@@ -5014,11 +5380,20 @@ is already in the list.</translation>
     </message>
     <message>
         <location line="+10"/>
-        <source>Linetypes</source>
-        <translation>Linetypes</translation>
+        <source>Linetypes and Lineweights</source>
+        <translation>Linetypes and Lineweights</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+8"/>
+        <source>Default lineweight:</source>
+        <translation>Default lineweight:</translation>
+    </message>
+    <message>
+        <source>Linetypes</source>
+        <translation type="vanished">Linetypes</translation>
+    </message>
+    <message>
+        <location line="+32"/>
         <source>Automatically use screen based linetypes in model view</source>
         <translation>Automatically use screen based linetypes in model view</translation>
     </message>
@@ -5033,12 +5408,12 @@ is already in the list.</translation>
         <translation>Scale linetype patterns by line weight</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Pattern scale for lineweight 0.00mm:</source>
         <translation>Pattern scale for lineweight 0.00mm:</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+38"/>
         <source>Display and Performance</source>
         <translation>Display and Performance</translation>
     </message>
@@ -5083,11 +5458,16 @@ is already in the list.</translation>
         <translation>Maximum number of reference points displayed:</translation>
     </message>
     <message>
+        <location line="+77"/>
+        <source>Use multithreading</source>
+        <translation>Use multithreading</translation>
+    </message>
+    <message>
         <source>Pen cap style:</source>
         <translation type="obsolete">Pen cap style:</translation>
     </message>
     <message>
-        <location line="+80"/>
+        <location line="+13"/>
         <source>Selection</source>
         <translation>Selection</translation>
     </message>
@@ -5603,7 +5983,7 @@ is already in the list.</translation>
         <translation>Rotate pasted entities&lt;br&gt;by this angle</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+110"/>
         <source>Scale:</source>
         <translation>Scale:</translation>
     </message>
@@ -5666,7 +6046,7 @@ is already in the list.</translation>
         <translation>Import Points</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+69"/>
         <source>&amp;Import Points</source>
         <translation>&amp;Import Points</translation>
     </message>
@@ -5684,12 +6064,11 @@ is already in the list.</translation>
         <translation>Specify second line</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
-        <location line="+88"/>
+        <location line="+91"/>
         <source>Angle:</source>
         <translation>Angle:</translation>
     </message>
@@ -5707,12 +6086,11 @@ is already in the list.</translation>
         <translation>Choose arc, circle, ellipse or elliptical arc</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
-        <location line="+233"/>
+        <location line="+236"/>
         <location line="+21"/>
         <location line="+24"/>
         <location line="+21"/>
@@ -5854,12 +6232,11 @@ is already in the list.</translation>
         <translation>Set next polygon corner</translation>
     </message>
     <message>
-        <location line="+6"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
-        <location line="+138"/>
+        <location line="+144"/>
         <source>Polygon area:</source>
         <translation>Polygon area:</translation>
     </message>
@@ -5897,12 +6274,11 @@ is already in the list.</translation>
         <translation>Specify second entity</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+95"/>
         <source>Distance:</source>
         <translation>Distance:</translation>
     </message>
@@ -5925,12 +6301,11 @@ is already in the list.</translation>
         <translation>Specify point</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+81"/>
         <source>Distance:</source>
         <translation>Distance:</translation>
     </message>
@@ -5953,12 +6328,11 @@ is already in the list.</translation>
         <translation>Second point</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+53"/>
         <source>Distance:</source>
         <translation>Distance:</translation>
     </message>
@@ -5991,12 +6365,11 @@ is already in the list.</translation>
         <translation>Choose polyline</translation>
     </message>
     <message>
-        <location line="+6"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+51"/>
         <source>Area</source>
         <translation>Area</translation>
     </message>
@@ -6213,7 +6586,7 @@ is already in the list.</translation>
         <translation>Rotate block&lt;br&gt;by this angle</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+110"/>
         <source>Scale X:</source>
         <translation>Scale X:</translation>
     </message>
@@ -6316,7 +6689,7 @@ is already in the list.</translation>
         <translation>Rotate pasted entities&lt;br&gt;by this angle</translation>
     </message>
     <message>
-        <location line="+100"/>
+        <location line="+103"/>
         <source>Scale:</source>
         <translation>Scale:</translation>
     </message>
@@ -6559,22 +6932,22 @@ is already in the list.</translation>
 <context>
     <name>Layer</name>
     <message>
-        <location filename="../scripts/Layer/AddLayer/PreferencesPage.ui" line="+33"/>
+        <location filename="../scripts/Layer/AddLayer/PreferencesPage.ui" line="+67"/>
         <source>Default color for new layers:</source>
         <translation>Default color for new layers:</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+7"/>
         <source>Default lineweight for layer 0:</source>
         <translation>Default lineweight for layer 0:</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="-48"/>
         <source>Default color for layer 0:</source>
         <translation>Default color for layer 0:</translation>
     </message>
     <message>
-        <location line="-45"/>
+        <location line="+7"/>
         <source>Default lineweight for new layers:</source>
         <translation>Default lineweight for new layers:</translation>
     </message>
@@ -6759,9 +7132,8 @@ is already in the list.</translation>
         <translation>Next vertex</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
         <location filename="../scripts/Draw/Dimension/Leader/Leader.ui" line="+23"/>
@@ -7042,6 +7414,11 @@ Library browser will not be available.</translation>
     </message>
     <message>
         <location line="+44"/>
+        <source>Dark icon background</source>
+        <translation>Dark icon background</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>View Mode:</source>
         <translation>View Mode:</translation>
     </message>
@@ -7180,9 +7557,8 @@ shown in search results:</translation>
         <translation>Next point</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
         <location filename="../scripts/Draw/Line/Line2P/Line2P.ui" line="+23"/>
@@ -7286,17 +7662,17 @@ shown in search results:</translation>
 <context>
     <name>LineBisector</name>
     <message>
-        <location filename="../scripts/Draw/Line/LineBisector/LineBisector.js" line="+66"/>
+        <location filename="../scripts/Draw/Line/LineBisector/LineBisector.js" line="+67"/>
         <source>First line</source>
         <translation>First line</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+6"/>
         <source>Second line</source>
         <translation>Second line</translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="+71"/>
         <source>Lines don&apos;t intersect.</source>
         <translation>Lines don&apos;t intersect.</translation>
     </message>
@@ -7334,9 +7710,8 @@ shown in search results:</translation>
         <translation>Second point</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
         <location filename="../scripts/Misc/MiscDraw/LineBoxJoint/LineBoxJoint.ui" line="+17"/>
@@ -7401,9 +7776,8 @@ shown in search results:</translation>
         <translation>Second point</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
         <location filename="../scripts/Misc/MiscDraw/LineDove/LineDoveInit.js" line="+2"/>
@@ -7538,17 +7912,17 @@ shown in search results:</translation>
 <context>
     <name>LineOrthogonalTangent</name>
     <message>
-        <location filename="../scripts/Draw/Line/LineOrthogonalTangent/LineOrthogonalTangent.js" line="+70"/>
+        <location filename="../scripts/Draw/Line/LineOrthogonalTangent/LineOrthogonalTangent.js" line="+71"/>
         <source>Choose line</source>
         <translation>Choose line</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+13"/>
         <source>Choose circle, arc or ellipse</source>
         <translation>Choose circle, arc or ellipse</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+141"/>
         <source>No tangent possible</source>
         <translation>No tangent possible</translation>
     </message>
@@ -7630,12 +8004,12 @@ shown in search results:</translation>
 <context>
     <name>LineRelativeAngle</name>
     <message>
-        <location filename="../scripts/Draw/Line/LineRelativeAngle/LineRelativeAngle.js" line="+70"/>
+        <location filename="../scripts/Draw/Line/LineRelativeAngle/LineRelativeAngle.js" line="+71"/>
         <source>Choose base line, arc, circle, ellipse or polyline</source>
         <translation>Choose base line, arc, circle, ellipse or polyline</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Set position</source>
         <translation>Set position</translation>
     </message>
@@ -7691,17 +8065,17 @@ shown in search results:</translation>
 <context>
     <name>LineTangent1</name>
     <message>
-        <location filename="../scripts/Draw/Line/LineTangent1/LineTangent1.js" line="+64"/>
+        <location filename="../scripts/Draw/Line/LineTangent1/LineTangent1.js" line="+65"/>
         <source>Choose start point of tangent</source>
         <translation>Choose start point of tangent</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+12"/>
         <source>Choose circle, arc or ellipse</source>
         <translation>Choose circle, arc or ellipse</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+85"/>
         <source>No tangent possible.</source>
         <translation>No tangent possible.</translation>
     </message>
@@ -7725,17 +8099,17 @@ shown in search results:</translation>
 <context>
     <name>LineTangent2</name>
     <message>
-        <location filename="../scripts/Draw/Line/LineTangent2/LineTangent2.js" line="+70"/>
+        <location filename="../scripts/Draw/Line/LineTangent2/LineTangent2.js" line="+71"/>
         <source>Choose first circle or arc</source>
         <translation>Choose first circle or arc</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+13"/>
         <source>Choose second circle or arc</source>
         <translation>Choose second circle or arc</translation>
     </message>
     <message>
-        <location line="+140"/>
+        <location line="+142"/>
         <source>No tangent possible</source>
         <translation>No tangent possible</translation>
     </message>
@@ -7838,6 +8212,24 @@ shown in search results:</translation>
         <location filename="../scripts/File/NewFile/MdiChildEmpty.ui" line="+20"/>
         <source>Untitled</source>
         <translation>Untitled</translation>
+    </message>
+</context>
+<context>
+    <name>MenuBar</name>
+    <message>
+        <location filename="../scripts/Widgets/MenuBar/MenuBar.js" line="+24"/>
+        <source>Widgets</source>
+        <translation>Widgets</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Menu Bar</source>
+        <translation>Menu Bar</translation>
+    </message>
+    <message>
+        <location filename="../scripts/Widgets/MenuBar/PreferencesPage.ui" line="+17"/>
+        <source>Use native menu bar</source>
+        <translation>Use native menu bar</translation>
     </message>
 </context>
 <context>
@@ -8314,7 +8706,7 @@ shown in search results:</translation>
 <context>
     <name>Offset</name>
     <message>
-        <location filename="../scripts/Modify/Offset/Offset.js" line="+75"/>
+        <location filename="../scripts/Modify/Offset/Offset.js" line="+77"/>
         <source>Choose line, arc, circle or ellipse</source>
         <translation>Choose line, arc, circle or ellipse</translation>
     </message>
@@ -8366,7 +8758,7 @@ shown in search results:</translation>
 <context>
     <name>OffsetThrough</name>
     <message>
-        <location filename="../scripts/Modify/OffsetThrough/OffsetThrough.js" line="+67"/>
+        <location filename="../scripts/Modify/OffsetThrough/OffsetThrough.js" line="+70"/>
         <source>Specify point</source>
         <translation>Specify point</translation>
     </message>
@@ -8850,7 +9242,7 @@ shown in search results:</translation>
         <translation>Done</translation>
     </message>
     <message>
-        <location line="+416"/>
+        <location line="+431"/>
         <source>Export to PDF</source>
         <translation>Export to PDF</translation>
     </message>
@@ -8968,7 +9360,7 @@ shown in search results:</translation>
 <context>
     <name>Projection</name>
     <message>
-        <location filename="../scripts/Projection/Projection.js" line="+82"/>
+        <location filename="../scripts/Projection/Projection.js" line="+84"/>
         <source>Projection Tools</source>
         <translation>Projection Tools</translation>
     </message>
@@ -9050,12 +9442,12 @@ shown in search results:</translation>
         <translation>Remove this property from selected objects</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+69"/>
         <source>All</source>
         <translation>All</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+24"/>
         <source>Add custom property to selected objects</source>
         <translation>Add custom property to selected objects</translation>
     </message>
@@ -9075,7 +9467,7 @@ shown in search results:</translation>
         <translation>Auto</translation>
     </message>
     <message>
-        <location line="+132"/>
+        <location line="+141"/>
         <source>Use auto measurement</source>
         <translation>Use auto measurement</translation>
     </message>
@@ -9090,7 +9482,7 @@ shown in search results:</translation>
         <translation>No</translation>
     </message>
     <message>
-        <location line="+333"/>
+        <location line="+358"/>
         <source>*VARIES*</source>
         <translation>*VARIES*</translation>
     </message>
@@ -9738,6 +10130,16 @@ shown in search results:</translation>
         <translation>Show warning when saving to a file format that does not support 24bit colors</translation>
     </message>
     <message>
+        <location line="+27"/>
+        <source>Store &quot;last saved by&quot; file information as:</source>
+        <translation>Store &quot;last saved by&quot; file information as:</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>(empty for username)</source>
+        <translation>(empty for username)</translation>
+    </message>
+    <message>
         <location filename="../scripts/File/SaveAs/SaveAs.js" line="+38"/>
         <source>File</source>
         <translation>File</translation>
@@ -10090,12 +10492,12 @@ shown in search results:</translation>
 <context>
     <name>SelectIntersectedEntities</name>
     <message>
-        <location filename="../scripts/Select/SelectIntersectedEntities/SelectIntersectedEntities.js" line="+89"/>
+        <location filename="../scripts/Select/SelectIntersectedEntities/SelectIntersectedEntities.js" line="+90"/>
         <source>First point</source>
         <translation>First point</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Second point</source>
         <translation>Second point</translation>
     </message>
@@ -10211,19 +10613,18 @@ shown in search results:</translation>
 <context>
     <name>SelectRectangle</name>
     <message>
-        <location filename="../scripts/Select/SelectRectangle/SelectRectangle.js" line="+73"/>
+        <location filename="../scripts/Select/SelectRectangle/SelectRectangle.js" line="+74"/>
         <source>First corner</source>
         <translation>First corner</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+9"/>
         <source>Second corner</source>
         <translation>Second corner</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
         <location filename="../scripts/Select/SelectRectangle/SelectRectangle.ui" line="+17"/>
@@ -10268,6 +10669,81 @@ shown in search results:</translation>
         <location line="+4"/>
         <source>(De-)Select all entities inside a rectangle</source>
         <translation>(De-)Select all entities inside a rectangle</translation>
+    </message>
+</context>
+<context>
+    <name>SelectWidget</name>
+    <message>
+        <source>*VARIES*</source>
+        <translation type="obsolete">*VARIES*</translation>
+    </message>
+    <message>
+        <source>:</source>
+        <translation type="obsolete">:</translation>
+    </message>
+    <message>
+        <source>No Selection</source>
+        <translation type="obsolete">No Selection</translation>
+    </message>
+    <message>
+        <source>Custom</source>
+        <translation type="obsolete">Custom</translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation type="obsolete">All</translation>
+    </message>
+    <message>
+        <source>Left</source>
+        <translation type="obsolete">Left</translation>
+    </message>
+    <message>
+        <source>Center</source>
+        <translation type="obsolete">Center</translation>
+    </message>
+    <message>
+        <source>Right</source>
+        <translation type="obsolete">Right</translation>
+    </message>
+    <message>
+        <source>Aligned</source>
+        <translation type="obsolete">Aligned</translation>
+    </message>
+    <message>
+        <source>Middle</source>
+        <translation type="obsolete">Middle</translation>
+    </message>
+    <message>
+        <source>Fit</source>
+        <translation type="obsolete">Fit</translation>
+    </message>
+    <message>
+        <source>Top</source>
+        <translation type="obsolete">Top</translation>
+    </message>
+    <message>
+        <source>Base</source>
+        <translation type="obsolete">Base</translation>
+    </message>
+    <message>
+        <source>Bottom</source>
+        <translation type="obsolete">Bottom</translation>
+    </message>
+    <message>
+        <source>Auto</source>
+        <translation type="obsolete">Auto</translation>
+    </message>
+    <message>
+        <source>Yes</source>
+        <translation type="obsolete">Yes</translation>
+    </message>
+    <message>
+        <source>No</source>
+        <translation type="obsolete">No</translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="obsolete">General</translation>
     </message>
 </context>
 <context>
@@ -10389,7 +10865,7 @@ shown in search results:</translation>
 <context>
     <name>ShapeAlgorithms</name>
     <message>
-        <location filename="../scripts/ShapeAlgorithms.js" line="+1413"/>
+        <location filename="../scripts/ShapeAlgorithms.js" line="+1423"/>
         <location line="+29"/>
         <source>At least two points are identical.</source>
         <translation>At least two points are identical.</translation>
@@ -10428,9 +10904,8 @@ shown in search results:</translation>
         <translation>Middle of Side</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
         <location filename="../scripts/Draw/Shape/ShapePolygonAFCP/ShapePolygonAFCP.ui" line="+17"/>
@@ -10471,9 +10946,8 @@ shown in search results:</translation>
         <translation>Second Corner</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
         <location filename="../scripts/Draw/Shape/ShapePolygonAFPP/ShapePolygonAFPP.ui" line="+17"/>
@@ -10499,7 +10973,7 @@ shown in search results:</translation>
 <context>
     <name>ShapePolygonCP</name>
     <message>
-        <location filename="../scripts/Draw/Shape/ShapePolygonCP/ShapePolygonCP.js" line="+58"/>
+        <location filename="../scripts/Draw/Shape/ShapePolygonCP/ShapePolygonCP.js" line="+59"/>
         <source>Center</source>
         <translation>Center</translation>
     </message>
@@ -10509,9 +10983,8 @@ shown in search results:</translation>
         <translation>Corner point</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
         <location filename="../scripts/Draw/Shape/ShapePolygonCP/ShapePolygonCP.ui" line="+17"/>
@@ -10542,9 +11015,8 @@ shown in search results:</translation>
         <translation>Corner point</translation>
     </message>
     <message>
-        <location line="+3"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
         <location filename="../scripts/Draw/Shape/ShapePolygonPP/ShapePolygonPP.ui" line="+17"/>
@@ -11012,9 +11484,8 @@ shown in search results:</translation>
         <translation>Next control point</translation>
     </message>
     <message>
-        <location line="+4"/>
         <source>Done</source>
-        <translation>Done</translation>
+        <translation type="vanished">Done</translation>
     </message>
     <message>
         <location filename="../scripts/Draw/Spline/SplineControlPoints/SplineControlPoints.ui" line="+23"/>
@@ -11152,7 +11623,7 @@ shown in search results:</translation>
         <translation>Target point</translation>
     </message>
     <message>
-        <location line="+138"/>
+        <location line="+141"/>
         <source>No selected entities in given range</source>
         <translation>No selected entities in given range</translation>
     </message>
@@ -11384,7 +11855,7 @@ shown in search results:</translation>
 <context>
     <name>TextDialog</name>
     <message>
-        <location filename="../scripts/Draw/Text/TextDialog/TextDialog.js" line="+241"/>
+        <location filename="../scripts/Draw/Text/TextDialog/TextDialog.js" line="+248"/>
         <source>Default value:</source>
         <translation>Default value:</translation>
     </message>
@@ -11454,7 +11925,7 @@ shown in search results:</translation>
         <translation>Others...</translation>
     </message>
     <message>
-        <location line="+132"/>
+        <location line="+135"/>
         <source>Degree</source>
         <translation>Degree</translation>
     </message>
@@ -12349,7 +12820,7 @@ shown in search results:</translation>
         <translation>Preview</translation>
     </message>
     <message>
-        <location filename="../scripts/Widgets/ViewportWidget/ViewportWidgetQt.ui" line="+99"/>
+        <location filename="../scripts/Widgets/ViewportWidget/ViewportWidgetQt.ui" line="+105"/>
         <source>Grid Spacing &lt; Meta Grid Spacing</source>
         <translation>Grid Spacing &lt; Meta Grid Spacing</translation>
     </message>
@@ -12380,7 +12851,7 @@ shown in search results:</translation>
 <context>
     <name>ViewportWidget</name>
     <message>
-        <location filename="../scripts/Widgets/ViewportWidget/ViewportWidget.js" line="+281"/>
+        <location filename="../scripts/Widgets/ViewportWidget/ViewportWidget.js" line="+286"/>
         <source>Dropped data not supported</source>
         <translation>Dropped data not supported</translation>
     </message>

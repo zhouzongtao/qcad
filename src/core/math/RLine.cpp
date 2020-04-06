@@ -83,6 +83,13 @@ void RLine::setAngle(double a) {
     endPoint = startPoint + RVector::createPolar(getLength(), a);
 }
 
+bool RLine::isParallel(const RLine& line) const {
+    double a = getAngle();
+    double oa = line.getAngle();
+
+    return RMath::isSameDirection(a, oa) || RMath::isSameDirection(a, oa + M_PI);
+}
+
 /**
  * \return True if the line is vertical.
  * If the start and end points of the line are identical, the line is both vertical and horizontal.
@@ -161,6 +168,17 @@ QList<RVector> RLine::getPointsWithDistanceToEnd(double distance, int from) cons
         ret.append(endPoint + normalEnd*distance);
     }
 
+    return ret;
+}
+
+QList<RVector> RLine::getPointCloud(double segmentLength) const {
+    Q_UNUSED(segmentLength)
+    QList<RVector> ret;
+    ret.append(startPoint);
+    for (double d = segmentLength; d<getLength(); d+=segmentLength) {
+        ret.append(getPointWithDistanceToStart(d));
+    }
+    ret.append(endPoint);
     return ret;
 }
 

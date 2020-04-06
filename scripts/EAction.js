@@ -67,6 +67,7 @@ EAction.includeBasePath = includeBasePath;
 // some commonly used translated strings:
 EAction.trBack = qsTr("Back");
 EAction.trCancel = qsTr("Cancel");
+EAction.trDone = qsTr("Done");
 
 EAction.crossCursor = undefined;
 EAction.noRelativeZeroResume = false;
@@ -779,14 +780,14 @@ EAction.prototype.setCursor = function(cursor, name) {
     if (!isNull(di)) {
         di.setCursor(cursor);
     }
-    if (!isNull(name)) {
-        var views = this.getGraphicsViews();
-        for (var i=0; i<views.length; i++) {
-            if (isFunction(views[i].setProperty)) {
-                views[i].setProperty("CursorName", name);
-            }
-        }
-    }
+//    if (!isNull(name)) {
+//        var views = this.getGraphicsViews();
+//        for (var i=0; i<views.length; i++) {
+//            if (isFunction(views[i].setProperty)) {
+//                views[i].setProperty("CursorName", name);
+//            }
+//        }
+//    }
 };
 
 /**
@@ -1090,17 +1091,35 @@ EAction.getToolBar = function(title, objectName, toolBarArea, category, before) 
 
     if (isNull(tb)) {
         tb = new QToolBar(title);
+
+        // style tool buttons in options toolbar:
         if (RSettings.isQt(5)) {
             if (!RSettings.hasCustomStyleSheet()) {
-                // Mac OS X: remove border around tool buttons:
-                tb.setStyleSheet(
-                    "QToolButton {" +
-                    "  border: 1px solid transparent;" +
-                    "} " +
-                    "QToolButton:checked { " +
-                    "  border:1px solid #7f7f7f; " +
-                    "  background: qlineargradient(x1:0 y1:0, x2:0 y2:1 stop:0 #c0c0c0, stop:0.1 #8a8a8a stop:0.2 #a3a3a3 stop:1 transparent); " +
-                    "}");
+                if (RSettings.hasDarkGuiBackground()) {
+                    tb.setStyleSheet(
+                          "QToolButton {"
+                             // make sure unchecked button renders with same size as checked
+                             // prevents things from moving around when checking / unchecking
+                        + "  border: 1px solid transparent;"
+                        + "} "
+                        + "QToolButton:checked { "
+                        + "  border-top: 1px solid #161616;"
+                        + "  border-left: 1px solid #161616;"
+                        + "  border-bottom: 1px solid #777777;"
+                        + "  border-right: 1px solid #777777;"
+                        + "  background-color: #222222;"
+                        + "}");
+                }
+                else {
+                    tb.setStyleSheet(
+                        "QToolButton {" +
+                        "  border: 1px solid transparent;" +
+                        "} " +
+                        "QToolButton:checked { " +
+                        "  border:1px solid #7f7f7f; " +
+                        "  background: qlineargradient(x1:0 y1:0, x2:0 y2:1 stop:0 #c0c0c0, stop:0.1 #8a8a8a stop:0.2 #a3a3a3 stop:1 transparent); " +
+                        "}");
+                }
             }
         }
         tb.objectName = objectName;
@@ -2044,7 +2063,7 @@ EAction.getEntityIdsUnderCursor = function(di, event, range, selectable) {
  * \return Entity ID under the mouse cursor. User may choose between multiple candidates if
  * result is ambiguous and Alt key is pressed.
  *
- * \param event RRInputEvent
+ * \param event RInputEvent
  * \param preview for previewing purposes
  * \param selectable Only return selectable (editable) entities
  */
@@ -2073,7 +2092,7 @@ EAction.getEntityId = function(di, action, event, preview, selectable) {
     }
 
     var altPressed = isAltPressed(event);
-    if (!altPressed || preview) {
+    if (!altPressed || preview || RSettings.getBoolValue("GraphicsView/DisableAltPicking", false)===true) {
         if (!isNull(action.idFromContextMenu)) {
             // user already chose an entity from the context menu:
             return action.idFromContextMenu;
@@ -2190,6 +2209,10 @@ EAction.warnNotLineArcPolyline = function() {
 
 EAction.warnNotLine = function() {
     EAction.handleUserWarning(qsTr("Entity is not a line."));
+};
+
+EAction.warnNotArc = function() {
+    EAction.handleUserWarning(qsTr("Entity is not an arc."));
 };
 
 EAction.warnNotArcCircle = function() {

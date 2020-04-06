@@ -89,7 +89,7 @@ Transform.prototype.getOperation = function(preview, selectResult, cache) {
         this.diTrans = new RDocumentInterface(docTrans);
         this.diTrans.setNotifyListeners(false);
 
-        // copy seletion to cache document:
+        // copy selection to cache document:
         var copyOp = new RCopyOperation(new RVector(0,0), doc);
         copyOp.setClear(false);
         this.diTrans.applyOperation(copyOp);
@@ -122,6 +122,7 @@ Transform.prototype.getOperation = function(preview, selectResult, cache) {
             if (isNull(entityP)) {
                 continue;
             }
+            //qDebug("%1 / %2".arg(i).arg(ids.length-1));
 
             // entity is valid as long as entityP is valid:
             //entity = entityP.data();
@@ -134,9 +135,9 @@ Transform.prototype.getOperation = function(preview, selectResult, cache) {
                 }
             }
 
-            var f = RAddObjectsOperation.GeometryOnly;
+            var f = RAddObjectsOperation.NoFlags;
             if (!this.useCurrentAttributes) {
-                f = f | RAddObjectsOperation.UseAttributes;
+                f = RAddObjectsOperation.UseAttributes | RAddObjectsOperation.GeometryOnly;
             }
 
             if (cache) {

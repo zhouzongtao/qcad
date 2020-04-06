@@ -134,7 +134,7 @@ QList<RSpline> RSpline::createSplinesFromArc(const RArc& arc) {
     QList<RSpline> curves;
 
     double piOverTwo = M_PI_2;
-    double segmentationAngle = piOverTwo/4;
+    double segmentationAngle = piOverTwo/8;
     //double segmentationAngle = M_PI/8;
     double sgn = (startAngle < endAngle) ? +1 : -1;
 
@@ -1114,6 +1114,11 @@ QList<RVector> RSpline::getPointsWithDistanceToEnd(double distance, int from) co
     }
 
     return ret;
+}
+
+QList<RVector> RSpline::getPointCloud(double segmentLength) const {
+    RPolyline pl = approximateWithArcs(0.01);
+    return pl.getPointCloud(segmentLength);
 }
 
 RVector RSpline::getVectorTo(const RVector& point, bool limited, double strictRange) const {

@@ -63,14 +63,14 @@
 
     // methods:
     
+            REcmaHelper::registerFunction(&engine, proto, slotTextChanged, "slotTextChanged");
+            
+            REcmaHelper::registerFunction(&engine, proto, slotValueChanged, "slotValueChanged");
+            
         engine.setDefaultPrototype(
             qMetaTypeId<RMathComboBox*>(), *proto);
 
         
-                        qScriptRegisterMetaType<
-                        RMathComboBox*>(
-                        &engine, toScriptValue, fromScriptValue, *proto);
-                    
     
 
     QScriptValue ctor = engine.newFunction(createEcma, *proto, 2);
@@ -107,8 +107,8 @@
     }
 
     QScriptValue result;
-        
-            // generate constructor variants:
+    
+            // constructor without variants:
             
     if( context->argumentCount() ==
         0
@@ -126,52 +126,8 @@
                     RMathComboBox
                     ();
                 
-                    result = engine->newQObject(context->thisObject(), cppResult, QScriptEngine::QtOwnership);
-                
-    } else 
-
-    if( context->argumentCount() ==
-        1
-                && (
-                
-                        context->argument(
-                        0
-                        ).isQObject()
-                        ||
-                    
-                        context->argument(
-                        0
-                        ).isNull()
-                ) /* type: QWidget * */
-            
-    ){
-    // prepare arguments:
-    
-            // argument isQObject
-            QWidget *
-            a0 =
-            qobject_cast<
-            QWidget *>
-            ( context->argument(
-            0
-            ).
-            toQObject()
-            );
-        
-    // end of arguments
-
-    // call C++ constructor:
-    
-            // non-copyable class:
-            RMathComboBox
-                    * cppResult =
-                    new
-                    RMathComboBox
-                    (
-                    a0
-                    );
-                
-                    result = engine->newQObject(context->thisObject(), cppResult, QScriptEngine::QtOwnership);
+                    // TODO: triggers: Warning: QScriptEngine::newVariant(): changing class of non-QScriptObject not supported:
+                    result = engine->newVariant(context->thisObject(), qVariantFromValue(cppResult));
                 
     } else 
 
@@ -222,7 +178,130 @@
     
 
     // public methods:
-     QScriptValue REcmaMathComboBox::toString
+     QScriptValue
+        REcmaMathComboBox::slotTextChanged
+        (QScriptContext* context, QScriptEngine* engine) 
+        
+        {
+            //REcmaHelper::functionStart("REcmaMathComboBox::slotTextChanged", context, engine);
+            //qDebug() << "ECMAScript WRAPPER: REcmaMathComboBox::slotTextChanged";
+            //QCoreApplication::processEvents();
+
+            QScriptValue result = engine->undefinedValue();
+            
+                    // public function: can be called from ECMA wrapper of ECMA shell:
+                    RMathComboBox* self = 
+                        getSelf("slotTextChanged", context);
+                  
+
+                //Q_ASSERT(self!=NULL);
+                if (self==NULL) {
+                    return REcmaHelper::throwError("self is NULL", context);
+                }
+                
+    
+    if( context->argumentCount() ==
+    1 && (
+            context->argument(0).isString()
+        ) /* type: QString */
+    
+    ){
+    // prepare arguments:
+    
+                    // argument isStandardType
+                    QString
+                    a0 =
+                    (QString)
+                    
+                    context->argument( 0 ).
+                    toString();
+                
+    // end of arguments
+
+    // call C++ function:
+    // return type 'void'
+    
+               self->slotTextChanged(a0);
+    } else
+
+
+        
+            {
+               return REcmaHelper::throwError("Wrong number/types of arguments for RMathComboBox.slotTextChanged().",
+                   context);
+            }
+            //REcmaHelper::functionEnd("REcmaMathComboBox::slotTextChanged", context, engine);
+            return result;
+        }
+         QScriptValue
+        REcmaMathComboBox::slotValueChanged
+        (QScriptContext* context, QScriptEngine* engine) 
+        
+        {
+            //REcmaHelper::functionStart("REcmaMathComboBox::slotValueChanged", context, engine);
+            //qDebug() << "ECMAScript WRAPPER: REcmaMathComboBox::slotValueChanged";
+            //QCoreApplication::processEvents();
+
+            QScriptValue result = engine->undefinedValue();
+            
+                    // public function: can be called from ECMA wrapper of ECMA shell:
+                    RMathComboBox* self = 
+                        getSelf("slotValueChanged", context);
+                  
+
+                //Q_ASSERT(self!=NULL);
+                if (self==NULL) {
+                    return REcmaHelper::throwError("self is NULL", context);
+                }
+                
+    
+    if( context->argumentCount() ==
+    2 && (
+            context->argument(0).isNumber()
+        ) /* type: double */
+     && (
+            context->argument(1).isString()
+        ) /* type: QString */
+    
+    ){
+    // prepare arguments:
+    
+                    // argument isStandardType
+                    double
+                    a0 =
+                    (double)
+                    
+                    context->argument( 0 ).
+                    toNumber();
+                
+                    // argument isStandardType
+                    QString
+                    a1 =
+                    (QString)
+                    
+                    context->argument( 1 ).
+                    toString();
+                
+    // end of arguments
+
+    // call C++ function:
+    // return type 'void'
+    
+               self->slotValueChanged(a0
+        ,
+    a1);
+    } else
+
+
+        
+            {
+               return REcmaHelper::throwError("Wrong number/types of arguments for RMathComboBox.slotValueChanged().",
+                   context);
+            }
+            //REcmaHelper::functionEnd("REcmaMathComboBox::slotValueChanged", context, engine);
+            return result;
+        }
+         QScriptValue REcmaMathComboBox::toString
     (QScriptContext *context, QScriptEngine *engine)
     
     {
@@ -299,23 +378,4 @@
 
 
         }
-         void fromScriptValue(const QScriptValue& value,
-        RMathComboBox*
-        &out) {
-            QObject* o = value.toQObject();
-            out = qobject_cast<
-            RMathComboBox*>(o);
-        }
-     QScriptValue toScriptValue(QScriptEngine *engine,
-        RMathComboBox*
-        const &in){
-            QScriptValue s = engine->newQObject(in, QScriptEngine::QtOwnership,
-            QScriptEngine::PreferExistingWrapperObject);
-            /*
-            if(s.isNull()){
-               REcmaHelper::throwError("This object is null.", engine->currentContext());
-            }
-            */
-            return s;
-        }
-    
+        

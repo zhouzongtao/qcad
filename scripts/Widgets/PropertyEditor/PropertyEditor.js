@@ -712,6 +712,7 @@ PropertyEditorImpl.prototype.updateGui = function(onlyChanges) {
     this.widget.findChild("LabelLinetypeScale").enabled = gotLinetypeScaleProperty;
     w = this.widget.findChild("LinetypeScale");
     w.enabled = gotLinetypeScaleProperty;
+    w.setTextColor(false);
     if (!gotLinetypeScaleProperty) {
         w.text = "";
     }
@@ -732,7 +733,7 @@ PropertyEditorImpl.prototype.updateGui = function(onlyChanges) {
             totalCount += typeCount;
 
             //qDebug("type: ", type, " / count: ", typeCount);
-            selectionCombo.addItem(entityTypeToString(type) + " (" + typeCount + ")", type);
+            selectionCombo.addItem(entityTypeToString(type) + " [" + typeCount + "]", type);
         }
         if (types.length!==1) {
             // TODO: add at 0 if 'no selection' item present at 0:
@@ -749,7 +750,9 @@ PropertyEditorImpl.prototype.updateGui = function(onlyChanges) {
         }
 
         generalGroup.enabled = true;
-        this.geometryGroup.enabled = true;
+        if (!isNull(this.geometryGroup)) {
+            this.geometryGroup.enabled = true;
+        }
     //}
 
     // add custom property button:
@@ -980,11 +983,20 @@ PropertyEditorImpl.prototype.initNumberControls = function(objectName, propertyT
                 value = RMath.rad2deg(value);
             }
             var document = EAction.getDocument();
-            if (!attributes.isAngleType() &&
+            if (!attributes.isAngleType() /*&&
                 (document.getLinearFormat()===RS.Fractional ||
-                 document.getLinearFormat()===RS.FractionalStacked)) {
+                 document.getLinearFormat()===RS.FractionalStacked)*/) {
 
                 newText = RUnit.getLabel(value, document, 8);
+
+                if (document.getLinearFormat()===RS.Architectural ||
+                    document.getLinearFormat()===RS.ArchitecturalStacked ||
+                    document.getLinearFormat()===RS.Engineering) {
+
+                    // show 3'-4" as 3' 4" to avoid ambiguous expressions:
+                    newText = newText.replace("-", " ");
+                }
+
             }
             else {
                 newText = sprintf("%.6f", value);
@@ -1361,10 +1373,23 @@ PropertyEditorImpl.prototype.makeReadOnly = function(control) {
     }
 
     var p = control.palette;
-    p.setColor(QPalette.Base, new QColor("#eeeeee"));
+    if (isNull(control.oriPalette)) {
+        control.setProperty("oriPalette", control.palette);
+    }
+
+    p.setColor(QPalette.Active, QPalette.Text, control.oriPalette.color(QPalette.Disabled, QPalette.WindowText));
+    p.setColor(QPalette.Inactive, QPalette.Text, control.oriPalette.color(QPalette.Disabled, QPalette.WindowText));
+
+//    if (RSettings.hasDarkGuiBackground()) {
+//        p.setColor(QPalette.Base, new QColor("#0a0a0a"));
+//    }
+//    else {
+//        p.setColor(QPalette.Base, new QColor("#eeeeee"));
+//    }
     control.palette = p;
+
     control.readOnly = true;
-    // leave enebaled to allow copy / page (20140411):
+    // leave enabled to allow copy / page (20140411):
     //control.enabled = false;
 };
 
@@ -1377,8 +1402,20 @@ PropertyEditorImpl.prototype.makeReadWrite = function(control) {
     }
 
     var p = control.palette;
-    p.setColor(QPalette.Base, new QColor("#ffffff"));
+    if (isNull(control.oriPalette)) {
+        control.setProperty("oriPalette", control.palette);
+    }
+
+    p.setColor(QPalette.Active, QPalette.Text, control.oriPalette.color(QPalette.Active, QPalette.WindowText));
+    p.setColor(QPalette.Inactive, QPalette.Text, control.oriPalette.color(QPalette.Inactive, QPalette.WindowText));
+//    //if (RSettings.hasDarkGuiBackground()) {
+//        p.setColor(QPalette.Base, control.oriBase);
+////    }
+////    else {
+////        p.setColor(QPalette.Base, new QColor("#ffffff"));
+////    }
     control.palette = p;
+
     control.readOnly = false;
     control.enabled = true;
 };

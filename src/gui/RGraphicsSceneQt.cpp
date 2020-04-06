@@ -401,8 +401,12 @@ void RGraphicsSceneQt::exportLineSegment(const RLine& line, double angle) {
 
     if (line.getLength()<RS::PointTolerance && !RMath::isNaN(angle)) {
         // Qt won't export a zero length line as point:
-        RVector startPoint = line.startPoint - RVector::createPolar(1e-6, angle);
-        RVector endPoint = line.endPoint + RVector::createPolar(1e-6, angle);
+        // note: QPainterPath compares points as floats with lower precision,
+        // 1e-1 should work, even for extreme coordiantes
+        // see FS#2053
+        RVector startPoint = line.startPoint - RVector::createPolar(1e-4, angle);
+        RVector endPoint = line.endPoint + RVector::createPolar(1e-4, angle);
+
         currentPainterPath.moveTo(startPoint);
         currentPainterPath.lineTo(endPoint);
         return;
@@ -645,6 +649,22 @@ void RGraphicsSceneQt::exportClipRectangle(const RBox& clipRectangle, bool force
     }
 }
 
+void RGraphicsSceneQt::exportTransform(const QTransform& t) {
+    RExporter::exportTransform(t);
+
+    REntity::Id id = getBlockRefOrEntityId();
+    RGraphicsSceneDrawable d(t);
+    addDrawable(id, d, draftMode, exportToPreview);
+}
+
+void RGraphicsSceneQt::exportEndTransform() {
+    RExporter::exportEndTransform();
+
+    REntity::Id id = getBlockRefOrEntityId();
+    RGraphicsSceneDrawable d(RGraphicsSceneDrawable::EndTransform);
+    addDrawable(id, d, draftMode, exportToPreview);
+}
+
 /**
  * \return Pattern scale factor with scale applied if we are printing.
  */
@@ -658,12 +678,14 @@ double RGraphicsSceneQt::getLineTypePatternScale(const RLinetypePattern& p) cons
 
     // see: FS#322 - Line type scaling with print scale factor
     if (view->isPrinting() || view->isPrintPreview()) {
-        QVariant scaleVariant = getDocument().getVariable("PageSettings/Scale", QVariant(), true);
-        if (!scaleVariant.isValid() || !scaleVariant.canConvert(QVariant::String)) {
-            return factor;
+        // 20200225: only apply global scale for model space, not for viewports or other blocks:
+        if (document->getCurrentBlockId()==document->getModelSpaceBlockId()) {
+            QVariant scaleVariant = getDocument().getVariable("PageSettings/Scale", QVariant(), true);
+            if (!scaleVariant.isValid() || !scaleVariant.canConvert(QVariant::String)) {
+                return factor;
+            }
+            factor /= RMath::parseScale(scaleVariant.toString());
         }
-
-        factor /= RMath::parseScale(scaleVariant.toString());
     }
 
     //qDebug() << "scene factor: " << factor;
@@ -690,8 +712,10 @@ void RGraphicsSceneQt::deleteDrawables() {
 /**
  * \return A list of all painter paths that represent the entity with the
  * given ID.
+ * TODO: return reference or pointer
  */
 QList<RGraphicsSceneDrawable> RGraphicsSceneQt::getDrawables(REntity::Id entityId) {
+    // TODO: check should not be necessary:
     if (drawables.contains(entityId)) {
         return drawables[entityId];
     }
@@ -699,7 +723,7 @@ QList<RGraphicsSceneDrawable> RGraphicsSceneQt::getDrawables(REntity::Id entityI
     return QList<RGraphicsSceneDrawable>();
 }
 
-bool RGraphicsSceneQt::hasClipRectangleFor(REntity::Id entityId, bool preview) {
+bool RGraphicsSceneQt::hasClipRectangleFor(REntity::Id entityId, bool preview) const {
     if (preview) {
         return previewClipRectangles.contains(entityId);
     }
@@ -708,7 +732,7 @@ bool RGraphicsSceneQt::hasClipRectangleFor(REntity::Id entityId, bool preview) {
     }
 }
 
-RBox RGraphicsSceneQt::getClipRectangle(REntity::Id entityId, bool preview) {
+RBox RGraphicsSceneQt::getClipRectangle(REntity::Id entityId, bool preview) const {
     if (preview) {
         if (previewClipRectangles.contains(entityId)) {
             return previewClipRectangles.value(entityId);
@@ -835,7 +859,8 @@ void RGraphicsSceneQt::startEntity(bool topLevelEntity) {
 
     if (!exportToPreview) {
         if (topLevelEntity) {
-            // top level entity (i.e. not entity in block ref): remove previous graphical representations:
+            // top level entity (i.e. not entity in block ref):
+            // remove previous graphical representations:
             drawables.remove(getEntity()->getId());
         }
     }
@@ -846,9 +871,9 @@ void RGraphicsSceneQt::startEntity(bool topLevelEntity) {
  */
 QDebug operator<<(QDebug dbg, RGraphicsSceneQt& gs) {
     dbg.nospace() << "RGraphicsSceneQt(" << QString("%1").arg((long int)&gs, 0, 16) << ")";
-    QMap<REntity::Id, QList<RGraphicsSceneDrawable> >::iterator it;
-    for (it=gs.drawables.begin(); it!=gs.drawables.end(); it++) {
+    //QMap<REntity::Id, QList<RGraphicsSceneDrawable> >::iterator it;
+    //for (it=gs.drawables.begin(); it!=gs.drawables.end(); it++) {
         //dbg.nospace() << "\n" << it.key() << "\n  " << it.value() << "\n";
-    }
+    //}
     return dbg.space();
 }

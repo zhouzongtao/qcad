@@ -6,7 +6,7 @@
     <message>
         <location filename="../src/gui/RColorCombo.cpp" line="+126"/>
         <source>Custom</source>
-        <translation>Mukautettu</translation>
+        <translation>Muokattu</translation>
     </message>
 </context>
 <context>
@@ -39,7 +39,7 @@
     <message>
         <location line="+3"/>
         <source>Center</source>
-        <translation>Keskusta</translation>
+        <translation>Keskipiste</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -60,7 +60,7 @@
 <context>
     <name>RMathLineEdit</name>
     <message>
-        <location filename="../src/gui/RMathLineEdit.cpp" line="+168"/>
+        <location filename="../src/gui/RMathLineEdit.cpp" line="+172"/>
         <source>Invalid</source>
         <translation>Virheellinen</translation>
     </message>

@@ -76,6 +76,12 @@ xmlns:rs="http://www.ribbonsoft.com">
     isConst="false" isStatic="true" />
     <property name="rxXAlignmentRight" type="QString"
     isConst="false" isStatic="true" />
+    <property name="rxXSpaceMText" type="QString" isConst="false"
+    isStatic="true" />
+    <property name="rxTabMM" type="QString" isConst="false"
+    isStatic="true" />
+    <property name="rxTabIN" type="QString" isConst="false"
+    isStatic="true" />
     <property name="rxParagraphFeed" type="QString" isConst="false"
     isStatic="true" />
     <property name="rxXFeed" type="QString" isConst="false"
@@ -141,6 +147,12 @@ xmlns:rs="http://www.ribbonsoft.com">
     <property name="rxUnderline" type="QString" isConst="false"
     isStatic="true" />
     <property name="escUnderline" type="QString" isConst="false"
+    isStatic="true" />
+    <property name="rxNoOp" type="QString" isConst="false"
+    isStatic="true" />
+    <property name="rxNoOpEnd" type="QString" isConst="false"
+    isStatic="true" />
+    <property name="escNoOp" type="QString" isConst="false"
     isStatic="true" />
     <property name="rxUnicode" type="QString" isConst="false"
     isStatic="true" />

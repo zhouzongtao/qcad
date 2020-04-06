@@ -221,7 +221,7 @@ xmlns:rs="http://www.ribbonsoft.com">
     <method name="hasChildEntities" cppName="hasChildEntities"
     specifier="public" isStatic="false" isVirtual="true"
     isScriptOverwritable="true">
-      <variant returnType="bool" isPureVirtual="true">
+      <variant returnType="bool" isPureVirtual="false">
         <arg type="REntity::Id" typeName="REntity::Id"
         name="parentId" isConst="false" />
       </variant>
@@ -230,7 +230,7 @@ xmlns:rs="http://www.ribbonsoft.com">
     cppName="queryBlockReferences" specifier="public"
     isStatic="false" isVirtual="true" isScriptOverwritable="true">
       <variant returnType="QSet &lt; REntity::Id &gt;"
-      isPureVirtual="true">
+      isPureVirtual="false">
         <arg type="RBlock::Id" typeName="RBlock::Id" name="blockId"
         isConst="false" />
       </variant>
@@ -239,7 +239,7 @@ xmlns:rs="http://www.ribbonsoft.com">
     cppName="queryAllBlockReferences" specifier="public"
     isStatic="false" isVirtual="true" isScriptOverwritable="true">
       <variant returnType="QSet &lt; REntity::Id &gt;"
-      isPureVirtual="true" />
+      isPureVirtual="false" />
     </method>
     <method name="querySelectedEntities"
     cppName="querySelectedEntities" specifier="public"
@@ -257,7 +257,7 @@ xmlns:rs="http://www.ribbonsoft.com">
     cppName="queryInfiniteEntities" specifier="public"
     isStatic="false" isVirtual="true" isScriptOverwritable="true">
       <variant returnType="QSet &lt; REntity::Id &gt;"
-      isPureVirtual="true" />
+      isPureVirtual="false" />
     </method>
     <method name="queryDocumentVariables"
     cppName="queryDocumentVariables" specifier="public"
@@ -310,6 +310,15 @@ xmlns:rs="http://www.ribbonsoft.com">
     <method name="queryEntityDirect" cppName="queryEntityDirect"
     specifier="public" isStatic="false" isVirtual="true"
     isScriptOverwritable="true">
+      <variant returnType="QSharedPointer &lt; REntity &gt;"
+      isPureVirtual="false">
+        <arg type="REntity::Id" typeName="REntity::Id"
+        name="entityId" isConst="false" />
+      </variant>
+    </method>
+    <method name="queryVisibleEntityDirect"
+    cppName="queryVisibleEntityDirect" specifier="public"
+    isStatic="false" isVirtual="true" isScriptOverwritable="true">
       <variant returnType="QSharedPointer &lt; REntity &gt;"
       isPureVirtual="false">
         <arg type="REntity::Id" typeName="REntity::Id"
@@ -1252,6 +1261,16 @@ xmlns:rs="http://www.ribbonsoft.com">
       <variant returnType="bool" isPureVirtual="false">
         <arg type="RLayer &amp;" typeName="RLayer" name="layer"
         isConst="true" />
+      </variant>
+    </method>
+    <method name="isEntityVisible" cppName="isEntityVisible"
+    specifier="public" isStatic="false" isVirtual="true"
+    isScriptOverwritable="true">
+      <variant returnType="bool" isPureVirtual="false">
+        <arg type="REntity &amp;" typeName="REntity" name="entity"
+        isConst="true" />
+        <arg type="RBlock::Id" typeName="RBlock::Id" name="blockId"
+        isConst="false" />
       </variant>
     </method>
     <method name="isBlockFrozen" cppName="isBlockFrozen"

@@ -76,6 +76,9 @@
         getBoundingBox
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
+        copyAttributesFrom
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
         to2D
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
@@ -188,6 +191,9 @@
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
         getCenterPoints
+        (QScriptContext* context, QScriptEngine* engine) 
+        ;static  QScriptValue
+        getArcReferencePoints
         (QScriptContext* context, QScriptEngine* engine) 
         ;static  QScriptValue
         getPointsWithDistanceToEnd

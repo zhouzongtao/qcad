@@ -233,7 +233,7 @@ void RViewportEntity::exportEntity(RExporter& e, bool preview, bool forceSelecte
             break;
         }
 
-        QSharedPointer<REntity> entity = modelSpaceData.queryEntity(*it);
+        QSharedPointer<REntity> entity = modelSpaceData.queryEntity(*it, true);
         if (entity.isNull()) {
             continue;
         }
@@ -253,7 +253,11 @@ void RViewportEntity::exportEntity(RExporter& e, bool preview, bool forceSelecte
 
         if (doc->getKnownVariable(RS::PSLTSCALE, true).toBool()==false) {
             // scale line type pattern:
-            entity->setLinetypeScale(data.scaleFactor);
+            entity->setLinetypeScale(entity->getLinetypeScale() * data.scaleFactor);
+        }
+
+        if (entity->getType()==RS::EntityHatch) {
+            entity->setViewportContext(data);
         }
 
         e.exportEntity(*entity, preview, true);

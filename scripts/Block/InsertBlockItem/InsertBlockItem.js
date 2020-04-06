@@ -221,6 +221,7 @@ InsertBlockItem.prototype.pickCoordinate = function(event, preview) {
                 var t = di.applyOperation(op);
                 prev = t.isPreview();
                 di.clearPreview();
+                di.setRelativeZero(this.offset);
                 di.repaintViews();
             }
 
@@ -297,20 +298,20 @@ InsertBlockItem.prototype.getOperation = function(preview) {
 };
 
 InsertBlockItem.prototype.slotScaleChanged = function(value) {
-    var scale = RMath.eval(value);
-    if (RMath.getError() === "") {
-        this.scale = scale;
-    } else {
+    if (isNumber(value)) {
+        this.scale = value;
+    }
+    else {
         this.scale = 1.0;
     }
     this.updatePreview(true);
 };
 
 InsertBlockItem.prototype.slotRotationChanged = function(value) {
-    var rotation = RMath.eval(value);
-    if (RMath.getError() === "") {
-        this.rotation = RMath.deg2rad(rotation);
-    } else {
+    if (isNumber(value)) {
+        this.rotation = value;
+    }
+    else {
         this.rotation = 0.0;
     }
     this.updatePreview(true);

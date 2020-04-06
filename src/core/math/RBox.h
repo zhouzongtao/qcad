@@ -62,6 +62,7 @@ public:
     double getWidth() const;
     double getHeight() const;
     RVector getSize() const;
+    double getArea() const;
     RVector getCenter() const;
     RVector getMinimum() const;
     RVector getMaximum() const;
@@ -107,6 +108,7 @@ public:
 
     RBox& grow(double offset);
     RBox& growXY(double offset);
+    RBox& growXY(double offsetX, double offsetY);
 
     void move(const RVector& offset);
     bool scaleByReference(const RVector& referencePoint, const RVector& targetPoint, bool keepAspectRatio = false, bool fromCenter = false);

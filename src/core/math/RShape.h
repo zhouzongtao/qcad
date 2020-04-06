@@ -43,6 +43,25 @@ class RTriangle;
 #define RDEFAULT_TOLERANCE_1E_MIN4 1.0e-4
 #endif
 
+class RShapeTransformation {
+public:
+    virtual ~RShapeTransformation() {}
+    virtual RVector transform(const RVector& v) = 0;
+};
+
+class RShapeTransformationScale : public RShapeTransformation {
+public:
+    RShapeTransformationScale(const RVector& factors, const RVector& center) : factors(factors), center(center) {}
+    virtual ~RShapeTransformationScale() {}
+
+    virtual RVector transform(const RVector& v) {
+        return v.getScaled(factors, center);
+    }
+
+    RVector factors;
+    RVector center;
+};
+
 /**
  * Interface for geometrical shape classes.
  *
@@ -186,7 +205,16 @@ public:
      */
     virtual QList<RVector> getCenterPoints() const = 0;
 
-    RVector getPointOnShape() const;
+    /**
+     * \return The reference point(s) of this shape.
+     */
+    virtual QList<RVector> getArcReferencePoints() const {
+        return QList<RVector>();
+    }
+
+    virtual RVector getPointOnShape() const;
+
+    virtual QList<RVector> getPointCloud(double segmentLength) const = 0;
 
     /**
      * \return All points on this shape with the given distance to an endpoint.
@@ -339,11 +367,11 @@ public:
     static QList<RVector> getIntersectionPoints(const RShape& shape1,
             const RShape& shape2, bool limited = true, bool same = false, bool force = false);
 
-    virtual bool move(const RVector& offset)=0;
-    virtual bool rotate(double rotation, const RVector& center = RDEFAULT_RVECTOR)=0;
+    virtual bool move(const RVector& offset) = 0;
+    virtual bool rotate(double rotation, const RVector& center = RDEFAULT_RVECTOR) = 0;
     virtual bool scale(double scaleFactor, const RVector& center = RVector());
-    virtual bool scale(const RVector& scaleFactors, const RVector& center = RVector())=0;
-    virtual bool mirror(const RLine& axis)=0;
+    virtual bool scale(const RVector& scaleFactors, const RVector& center = RVector()) = 0;
+    virtual bool mirror(const RLine& axis) = 0;
     virtual bool flipHorizontal();
     virtual bool flipVertical();
     virtual bool stretch(const RBox& area, const RVector& offset);
@@ -449,6 +477,17 @@ public:
 
     static QSharedPointer<RShape> xLineToRay(QSharedPointer<RShape> shape);
     static QSharedPointer<RShape> rayToLine(QSharedPointer<RShape> shape);
+
+    static QSharedPointer<RShape> scaleArc(const RShape& shape, const RVector& scaleFactors, const RVector& center = RDEFAULT_RVECTOR) {
+        RShapeTransformationScale t(scaleFactors, center);
+        return transformArc(shape, t);
+    }
+
+    /**
+     * \nonscriptable
+     */
+    static QSharedPointer<RShape> transformArc(const RShape& shape, RShapeTransformation& transformation);
+    static QSharedPointer<RShape> ellipseToArcCircleEllipse(const REllipse& ellipse);
 
     static int getErrorCode() {
         return errorCode;

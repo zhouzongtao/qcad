@@ -191,18 +191,18 @@ public:
      */
     virtual QSet<REntity::Id> queryChildEntities(REntity::Id parentId, RS::EntityType type = RS::EntityAll) = 0;
 
-    virtual bool hasChildEntities(REntity::Id parentId) = 0;
+    virtual bool hasChildEntities(REntity::Id parentId) const = 0;
 
     /**
      * \return A set of all block reference entity IDs that reference
      * the given block.
      */
-    virtual QSet<REntity::Id> queryBlockReferences(RBlock::Id blockId) = 0;
+    virtual QSet<REntity::Id> queryBlockReferences(RBlock::Id blockId) const = 0;
 
     /**
      * \return A set of all block reference entity IDs.
      */
-    virtual QSet<REntity::Id> queryAllBlockReferences() = 0;
+    virtual QSet<REntity::Id> queryAllBlockReferences() const = 0;
 
     /**
      * \return A set of entity IDs of all selected entities.
@@ -217,7 +217,7 @@ public:
     /**
      * \return A set of entity IDs of all infinite entities (xlines).
      */
-    virtual QSet<REntity::Id> queryInfiniteEntities() = 0;
+    virtual QSet<REntity::Id> queryInfiniteEntities() const = 0;
 
     virtual QSharedPointer<RDocumentVariables> queryDocumentVariables() const = 0;
     virtual QSharedPointer<RDocumentVariables> queryDocumentVariablesDirect() const = 0;
@@ -241,6 +241,20 @@ public:
 
     virtual QSharedPointer<REntity> queryEntityDirect(REntity::Id entityId) const {
         return queryEntity(entityId);
+    }
+
+    virtual QSharedPointer<REntity> queryVisibleEntityDirect(REntity::Id entityId) const {
+        QSharedPointer<REntity> ret = queryEntityDirect(entityId);
+//        if (ret->isUndone()) {
+//            return QSharedPointer<REntity>();
+//        }
+//        if (ret->getBlockId()!=currentBlockId) {
+//            return QSharedPointer<REntity>();
+//        }
+        if (!ret->isVisible()) {
+            return QSharedPointer<REntity>();
+        }
+        return ret;
     }
 
     /**
@@ -639,6 +653,8 @@ public:
     virtual bool isLayerPlottable(const RLayer& layer) const;
     virtual bool isParentLayerPlottable(RLayer::Id layerId) const;
     virtual bool isParentLayerPlottable(const RLayer& layer) const;
+
+    virtual bool isEntityVisible(const REntity& entity, RBlock::Id blockId) const;
 
     /**
      * \return True if the given block is frozen.

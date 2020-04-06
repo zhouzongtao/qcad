@@ -77,7 +77,7 @@ Mostra simbolo diametro
 Kilometro
 chilometro
 chilometri</translatorcomment>
-        <translation>Kilometro</translation>
+        <translation>Chilometro</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -524,8 +524,8 @@ Inserisci l&apos;angolo della linea di quota:</translatorcomment>
         <translation>Attributi</translation>
     </message>
     <message>
-        <location filename="../src/core/REntity.cpp" line="+87"/>
-        <location filename="../src/core/RObject.cpp" line="+67"/>
+        <location filename="../src/core/REntity.cpp" line="+91"/>
+        <location filename="../src/core/RObject.cpp" line="+68"/>
         <source>Type</source>
         <translatorcomment>--exact match--
 --file: liferea-1.8-rc1.it.po--
@@ -644,6 +644,11 @@ Colore G&amp;riglia:</translatorcomment>
         <location line="+1"/>
         <source>Selected</source>
         <translation>Selezionato</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Invisible</source>
+        <translation>Invisibile</translation>
     </message>
     <message>
         <location filename="../src/core/REntity.cpp" line="+2"/>
@@ -859,7 +864,7 @@ Colore G&amp;riglia:</translatorcomment>
         <translation type="vanished">Margini di stampa</translation>
     </message>
     <message>
-        <location filename="../src/core/RBlockReferenceData.cpp" line="+651"/>
+        <location filename="../src/core/RBlockReferenceData.cpp" line="+852"/>
         <source>Circular (recursive) block referencing detected:</source>
         <translation>È stato rilevato un riferimento circolare (ricorsivo) blocco:</translation>
     </message>
@@ -1071,7 +1076,7 @@ Margine (Ingrandita)</translatorcomment>
         <translation type="vanished">Margine (Ingrandita)</translation>
     </message>
     <message>
-        <location filename="../src/core/RLinetype.cpp" line="+48"/>
+        <location filename="../src/core/RLinetype.cpp" line="+52"/>
         <source>Name</source>
         <translation>Nome</translation>
     </message>
@@ -1094,7 +1099,7 @@ Margine (Ingrandita)</translatorcomment>
 <context>
     <name>RLinetypePattern</name>
     <message>
-        <location filename="../src/core/RLinetypePattern.cpp" line="+856"/>
+        <location filename="../src/core/RLinetypePattern.cpp" line="+869"/>
         <source>By Layer</source>
         <translation>Da livello</translation>
     </message>
